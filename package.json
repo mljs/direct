@@ -1,0 +1,40 @@
+{
+  "name": "ml-direct-optimization",
+  "version": "0.0.0",
+  "description": "optimization",
+  "main": "lib/index.js",
+  "module": "src/index.js",
+  "files": [
+    "lib",
+    "src"
+  ],
+  "scripts": {
+    "eslint": "eslint src",
+    "eslint-fix": "npm run eslint -- --fix",
+    "prepublishOnly": "rollup -c",
+    "test": "npm run test-coverage && npm run eslint",
+    "test-coverage": "jest --coverage",
+    "test-only": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cheminfo/ml-direct-optimization.git"
+  },
+  "keywords": [],
+  "author": "Wargner Moreno",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/cheminfo/ml-direct-optimization/issues"
+  },
+  "homepage": "https://github.com/cheminfo/ml-direct-optimization#readme",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "prettier": {
+    "arrowParens": "always",
+    "semi": true,
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "all"
+  }
+}
