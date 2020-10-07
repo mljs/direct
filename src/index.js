@@ -1,9 +1,8 @@
-'use strict';
-const fs = require('fs');
-const path = require('path');
-const Matrix = require('ml-matrix').Matrix;
-const isAnyArray= require('is-any-array');
-const conhull = require('./util/conhull');
+import fs from 'fs';
+
+import isAnyArray from 'is-any-array';
+
+import conhull from './util/conhull';
 
 /**
  * Creates new PCA (Principal Component Analysis) from the dataset
@@ -15,7 +14,7 @@ const conhull = require('./util/conhull');
  * @param {Object} [options.initialState] - Parameter with information.
  * */
 
-function Direct(fun, xL, xU, options = {}, initialState = {}) {
+export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
   const opts = {
     iterations: 50,
     epsilon: 1e-4,
@@ -45,9 +44,7 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
   //-------------------------------------------------------------------------
   //                        STEP 1. Initialization
   //-------------------------------------------------------------------------
-  let iterations = options.iterations;
   let epsilon = options.epsilon;
-  let tol = options.tol;
   let funCalls = 0;
   let n = xL.length;
   let tolle = 1e-16;
@@ -57,8 +54,6 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
 
   let F, m, D, L, d, fMin, E, iMin, C;
   if (initialState.C && initialState.C.length > 0) {
-
-    console.log('entra initial');
     F = initialState.F;
     m = F.length - 1;
     D = initialState.D;
@@ -123,8 +118,6 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
       let b2 = dMin[d.length - 1];
       let slope = (b2 - b1) / (a2 - a1);
       let constant = b1 - slope * a1;
-      let ff = [];
-      let dd = [];
       let S2 = new Uint32Array(last);
       last = 0;
       for (let i = 0; i < S2.length; i++) {
@@ -237,7 +230,7 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
         currentMin.push(temp.slice());
       }
     }
-    fs.appendFileSync('optimum', JSON.stringify(currentMin) + ',')
+    fs.appendFileSync('optimum', `${JSON.stringify(currentMin)},`);
     t += 1;
   }
   //--------------------------------------------------------------
@@ -255,7 +248,7 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
     }
   }
 
-  result.finalState = {C, F, D, L, d, dMin, funCalls};
+  result.finalState = { C, F, D, L, d, dMin, funCalls };
   let xK = [];
   for (let i = 0; i < F.length; i++) {
     if (F[i] === fMin) {
@@ -265,8 +258,6 @@ function Direct(fun, xL, xU, options = {}, initialState = {}) {
   result.optimum = xK;
   return result;
 }
-
-module.exports = Direct;
 
 function getIndexOfMin(F, D, E, fMin) {
   let index;
@@ -285,7 +276,7 @@ function getMinValue(F) {
   let nbPoints = F.length;
   let minValue = F[0];
   for (let i = 1; i < nbPoints; i++) {
-    if (minValue > F[i])  minValue = F[i];
+    if (minValue > F[i]) minValue = F[i];
   }
   return minValue;
 }
@@ -294,40 +285,7 @@ function getMaxValue(F) {
   let nbPoints = F.length;
   let maxValue = F[0];
   for (let i = 1; i < nbPoints; i++) {
-    if (maxValue < F[i])  maxValue = F[i];
+    if (maxValue < F[i]) maxValue = F[i];
   }
   return maxValue;
 }
-
-// //--------------------------------------------------------
-// //   Testing the algorithm with benchmark functions
-// //-----------------------------------------------------
-
-// function testFunction(x) {
-//   let a =
-//     x[1] -
-//     (5 * Math.pow(x[0], 2)) / (4 * Math.pow(Math.PI, 2)) +
-//     (5 * x[0]) / Math.PI -
-//     6;
-//   let b = 10 * (1 - 1 / (8 * Math.PI)) * Math.cos(x[0]) + 10;
-//   let result = Math.pow(a, 2) + b;
-//   return result;
-// }
-
-// let xL = [-5, 0];
-// let xU = [10, 15];
-// let options = { iterations: 6 };
-// let result = Direct(testFunction, xL, xU, options);
-// console.log('__________--------____________\n\n\n\n')
-// console.log(result.optimum, result.iterations, result.finalState.C.length, result.finalState.funCalls)
-// console.log('__________--------____________')
-// console.log(result);
-// let result2 = Direct(testFunction, xL, xU, options, result.finalState);
-// console.log(result2.optimum, result2.iterations, result2.finalState.C.length, result2.finalState.funCalls)
-// for (let i = 0; i < 19; i++) {
-//   console.time('hola');
-//   let result = Direct(testFunction, xL, xU, GLOBAL);
-//   console.timeEnd('hola');
-// }
-// console.log('-___----------_____RESULT-____----------___');
-// console.log(rCesult);
