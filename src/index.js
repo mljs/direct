@@ -1,17 +1,17 @@
-import fs from 'fs';
-
-import isAnyArray from 'is-any-array';
+import getMaxValue from 'ml-array-max';
+import getMinValue from 'ml-array-min';
 
 import conhull from './util/conhull';
 
 /**
- * Creates new PCA (Principal Component Analysis) from the dataset
- * @param {Matrix} fun - dataset or covariance matrix.
- * @param {Array} xU - dataset or covariance matrix.
- * @param {Array} xL - dataset or covariance matrix.
+ * Evaluate how...
+ * @param {function} fun - Evaluating function.
+ * @param {Array} xU - Upper boundaries.
+ * @param {Array} xL - Lower boundaries.
  * @param {Object} [options]
- * @param {number} [options.printLevel] - Parameter to show information.
- * @param {Object} [options.initialState] - Parameter with information.
+ * @param {number} [options.iterations] - Number of iterations.
+ * @param {number} [options.epsilon] - Epsilon.
+ * @param {number} [options.tol] - Minimum tollerance of the function.
  * */
 
 export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
@@ -27,13 +27,8 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
     throw new Error('There is something undefined');
   }
 
-  if (isAnyArray(xL)) {
-    xL = new Float32Array(xL);
-  }
-
-  if (isAnyArray(xU)) {
-    xU = new Float32Array(xU);
-  }
+  xL = new Float64Array(xL);
+  xU = new Float64Array(xU);
 
   if (xL.length !== xU.length) {
     throw new Error(
@@ -99,6 +94,7 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
     //  STEP 2. Identify the set S of all potentially optimal rectangles
     //----------------------------------------------------------------------
     let S1 = new Uint32Array(F.length);
+    // eslint-disable-next-line no-loop-func
     let idx = d.findIndex((e) => e === D[iMin]);
     let last = 0;
     for (let i = idx; i < d.length; i++) {
@@ -209,7 +205,7 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
     dMin = new Array(d.length);
     for (let i = 0; i < d.length; i++) {
       let minIndex;
-      let minValue = Number.MAX_SAFE_INTEGER;
+      let minValue = Number.POSITIVE_INFINITY;
       for (let k = 0; k < D.length; k++) {
         if (D[k] === d[i]) {
           if (F[k] < minValue) {
@@ -230,7 +226,6 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
         currentMin.push(temp.slice());
       }
     }
-    fs.appendFileSync('optimum', `${JSON.stringify(currentMin)},`);
     t += 1;
   }
   //--------------------------------------------------------------
@@ -261,7 +256,7 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
 
 function getIndexOfMin(F, D, E, fMin) {
   let index;
-  let prevValue = Number.MAX_SAFE_INTEGER;
+  let prevValue = Number.POSITIVE_INFINITY;
   for (let i = 0; i < F.length; i++) {
     let newValue = (F[i] - (fMin + E)) / D[i];
     if (newValue < prevValue) {
@@ -270,22 +265,4 @@ function getIndexOfMin(F, D, E, fMin) {
     }
   }
   return index;
-}
-
-function getMinValue(F) {
-  let nbPoints = F.length;
-  let minValue = F[0];
-  for (let i = 1; i < nbPoints; i++) {
-    if (minValue > F[i]) minValue = F[i];
-  }
-  return minValue;
-}
-
-function getMaxValue(F) {
-  let nbPoints = F.length;
-  let maxValue = F[0];
-  for (let i = 1; i < nbPoints; i++) {
-    if (maxValue < F[i]) maxValue = F[i];
-  }
-  return maxValue;
 }
