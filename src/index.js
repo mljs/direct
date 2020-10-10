@@ -69,15 +69,15 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
     }
   } else {
     m = 0;
-    C = [new Float32Array(n).fill(0.5)];
-    let xM = new Float32Array(n);
+    C = [new Float64Array(n).fill(0.5)];
+    let xM = new Float64Array(n);
     for (let i = 0; i < xL.length; i++) {
       xM[i] = xL[i] + C[0][i] * diffBorders[i];
     }
     fMin = fun(xM);
     funCalls = funCalls + 1;
     iMin = 0;
-    L = [new Float32Array(n).fill(0.5)];
+    L = [new Float64Array(n).fill(0.5)];
     D = [Math.sqrt(n * Math.pow(0.5, 2))];
     F = [fMin];
     d = D;
@@ -156,8 +156,8 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
         let cm2 = C[j].slice();
         cm1[i] += delta;
         cm2[i] -= delta;
-        let xm1 = new Float32Array(cm1.length);
-        let xm2 = new Float32Array(cm1.length);
+        let xm1 = new Float64Array(cm1.length);
+        let xm2 = new Float64Array(cm1.length);
         for (let i = 0; i < cm1.length; i++) {
           xm1[i] = xL[i] + cm1[i] * diffBorders[i];
           xm2[i] = xL[i] + cm2[i] * diffBorders[i];
