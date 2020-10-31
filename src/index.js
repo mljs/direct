@@ -1,7 +1,7 @@
 import getMaxValue from 'ml-array-max';
 import getMinValue from 'ml-array-min';
 
-import conhull from './util/conhull';
+import antiLowerConvexHull from './util/antiLowerConvexHull';
 
 /**
  * Evaluate how...
@@ -14,23 +14,32 @@ import conhull from './util/conhull';
  * @param {number} [options.tol] - Minimum tollerance of the function.
  * */
 
-export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
-  const opts = {
-    iterations: 50,
-    epsilon: 1e-4,
-    tol: 0.01,
-  };
+export default function Direct(
+  objectiveFunction,
+  lowerBoundaries,
+  upperBoundaries,
+  options = {},
+  initialState = {},
+) {
+  const {
+    iterations = 50,
+    epsilon = 1e-4,
+    tolerance = 1e-16,
+    tolerance2 = 1e-12,
+  } = options;
 
-  options = Object.assign({}, opts, options);
-
-  if (fun === undefined || xL === undefined || xU === undefined) {
-    throw new Error('There is something undefined');
+  if (
+    objectiveFunction === undefined ||
+    lowerBoundaries === undefined ||
+    upperBoundaries === undefined
+  ) {
+    throw new RangeError('There is something undefined');
   }
 
-  xL = new Float64Array(xL);
-  xU = new Float64Array(xU);
+  lowerBoundaries = new Float64Array(lowerBoundaries);
+  upperBoundaries = new Float64Array(upperBoundaries);
 
-  if (xL.length !== xU.length) {
+  if (lowerBoundaries.length !== upperBoundaries.length) {
     throw new Error(
       'Lower bounds and Upper bounds for x are not of the same length',
     );
@@ -39,218 +48,257 @@ export default function Direct(fun, xL, xU, options = {}, initialState = {}) {
   //-------------------------------------------------------------------------
   //                        STEP 1. Initialization
   //-------------------------------------------------------------------------
-  let epsilon = options.epsilon;
-  let funCalls = 0;
-  let n = xL.length;
-  let tolle = 1e-16;
-  let tolle2 = 1e-6;
-  let dMin = initialState.dMin;
-  let diffBorders = xU.map((x, i) => x - xL[i]);
+  let n = lowerBoundaries.length;
+  let diffBorders = upperBoundaries.map((x, i) => x - lowerBoundaries[i]);
+  let empty = new Array(n).fill();
+  let {
+    numberOfRectangles = 0,
+    unitaryCoordinates = [new Float64Array(n).fill(0.5)],
+    middlePoint = new Float64Array(
+      empty.map((value, index) => {
+        return (
+          lowerBoundaries[index] +
+          unitaryCoordinates[0][index] * diffBorders[index]
+        );
+      }),
+    ),
+    bestCurrentValue = objectiveFunction(middlePoint),
+    fCalls = 1,
+    smallerDistance = 0,
+    edgeSizes = [new Float64Array(n).fill(0.5)],
+    diagonalDistances = [Math.sqrt(n * Math.pow(0.5, 2))],
+    functionValues = [bestCurrentValue],
+    differentDistances = diagonalDistances,
+    smallerValuesByDistance = [bestCurrentValue],
+    choiceLimit = undefined,
+  } = initialState;
 
-  let F, m, D, L, d, fMin, E, iMin, C;
-  if (initialState.C && initialState.C.length > 0) {
-    F = initialState.F;
-    m = F.length - 1;
-    D = initialState.D;
-    L = initialState.L;
-    d = initialState.d;
-    dMin = initialState.dMin;
-    funCalls = initialState.funCalls;
+  if (
+    initialState.unitaryCoordinates &&
+    initialState.unitaryCoordinates.length > 0
+  ) {
+    bestCurrentValue = getMinValue(functionValues);
+    choiceLimit =
+      epsilon * Math.abs(bestCurrentValue) > 1e-8
+        ? epsilon * Math.abs(bestCurrentValue)
+        : 1e-8;
+    smallerDistance = getIndexOfMin(
+      functionValues,
+      diagonalDistances,
+      choiceLimit,
+      bestCurrentValue,
+    );
 
-    fMin = getMinValue(F);
-    E = epsilon * Math.abs(fMin) > 1e-8 ? epsilon * Math.abs(fMin) : 1e-8;
-    iMin = getIndexOfMin(F, D, E, fMin);
-
-    C = initialState.C.slice();
-    for (let j = 0; j < F.length; j++) {
-      for (let i = 0; i < xL.length; i++) {
-        C[j][i] = (C[j][i] - xL[i]) / diffBorders[i];
+    unitaryCoordinates = initialState.unitaryCoordinates.slice(); //porqué usar slice aqui?
+    for (let j = 0; j < functionValues.length; j++) {
+      for (let i = 0; i < lowerBoundaries.length; i++) {
+        unitaryCoordinates[j][i] =
+          (unitaryCoordinates[j][i] - lowerBoundaries[i]) / diffBorders[i];
       }
     }
-  } else {
-    m = 0;
-    C = [new Float64Array(n).fill(0.5)];
-    let xM = new Float64Array(n);
-    for (let i = 0; i < xL.length; i++) {
-      xM[i] = xL[i] + C[0][i] * diffBorders[i];
-    }
-    fMin = fun(xM);
-    funCalls = funCalls + 1;
-    iMin = 0;
-    L = [new Float64Array(n).fill(0.5)];
-    D = [Math.sqrt(n * Math.pow(0.5, 2))];
-    F = [fMin];
-    d = D;
-    dMin = [fMin];
   }
 
-  let t = 0;
+  let iteration = 0;
   //-------------------------------------------------------------------------
   //                          Iteration loop
   //-------------------------------------------------------------------------
 
-  while (t < options.iterations) {
+  while (iteration < iterations) {
     //----------------------------------------------------------------------
     //  STEP 2. Identify the set S of all potentially optimal rectangles
     //----------------------------------------------------------------------
-    let S1 = new Uint32Array(F.length);
-    // eslint-disable-next-line no-loop-func
-    let idx = d.findIndex((e) => e === D[iMin]);
-    let last = 0;
-    for (let i = idx; i < d.length; i++) {
-      for (let f = 0; f < F.length; f++) {
-        if (F[f] === dMin[i]) {
-          if (D[f] === d[i]) {
-            S1[last++] = f;
-          }
+
+    let S1 = [];
+    let idx = differentDistances.findIndex(
+      // eslint-disable-next-line no-loop-func
+      (e) => e === diagonalDistances[smallerDistance],
+    );
+    let counter = 0;
+    for (let i = idx; i < differentDistances.length; i++) {
+      for (let f = 0; f < functionValues.length; f++) {
+        if (
+          (functionValues[f] === smallerValuesByDistance[i]) &
+          (diagonalDistances[f] === differentDistances[i])
+        ) {
+          S1[counter++] = f;
         }
       }
     }
-    let S, S3;
-    if (d.length - idx > 2) {
-      let a1 = D[iMin];
-      let b1 = F[iMin];
-      let a2 = d[d.length - 1];
-      let b2 = dMin[d.length - 1];
+
+    let optimumValuesIndex, S3;
+    if (differentDistances.length - idx > 1) {
+      let a1 = diagonalDistances[smallerDistance];
+      let b1 = functionValues[smallerDistance];
+      let a2 = differentDistances[differentDistances.length - 1];
+      let b2 = smallerValuesByDistance[differentDistances.length - 1];
       let slope = (b2 - b1) / (a2 - a1);
       let constant = b1 - slope * a1;
-      let S2 = new Uint32Array(last);
-      last = 0;
+      let S2 = new Uint32Array(counter);
+      counter = 0;
       for (let i = 0; i < S2.length; i++) {
         let j = S1[i];
-        if (F[j] <= slope * D[j] + constant + tolle2) {
-          S2[last++] = j;
+        if (
+          functionValues[j] <=
+          slope * diagonalDistances[j] + constant + tolerance2
+        ) {
+          S2[counter++] = j;
         }
       }
-      let xx = new Array(last);
-      let yy = new Array(last);
-      for (let i = 0; i < xx.length; i++) {
-        xx[i] = [D[S2[i]]];
-        yy[i] = [F[S2[i]]];
+      let xHull = new Array(counter);
+      let yHull = new Array(counter);
+      for (let i = 0; i < xHull.length; i++) {
+        xHull[i] = [diagonalDistances[S2[i]]];
+        yHull[i] = [functionValues[S2[i]]];
       }
-      let h = conhull(xx, yy);
-      S3 = new Uint32Array(h.length);
-      for (let i = 0; i < h.length; i++) {
-        S3[i] = S2[h[i]];
+
+      let lowerIndexHull = antiLowerConvexHull(xHull, yHull);
+
+      S3 = [];
+      for (let i = 0; i < lowerIndexHull.length; i++) {
+        S3.push(S2[lowerIndexHull[i]]);
       }
     } else {
-      S3 = S1.slice(0, last);
+      S3 = S1.slice(0, counter);
     }
-    S = S3;
+    optimumValuesIndex = S3;
     //--------------------------------------------------------------
     // STEPS 3,5: Select any rectangle j in S
     //--------------------------------------------------------------
-    for (let por = 0; por < S.length; por++) {
-      let j = S[por];
-      let maxL = getMaxValue(L[j]);
-      let I = new Uint32Array(L[j].length);
-      last = 0;
-      for (let i = 0; i < L[j].length; i++) {
-        if (Math.abs(L[j][i] - maxL) < tolle) I[last++] = i;
-      }
-      let delta = (2 * maxL) / 3;
-      let w = new Array(last);
-      for (let r = 0; r < last; r++) {
-        let i = I[r];
-        let cm1 = C[j].slice();
-        let cm2 = C[j].slice();
-        cm1[i] += delta;
-        cm2[i] -= delta;
-        let xm1 = new Float64Array(cm1.length);
-        let xm2 = new Float64Array(cm1.length);
-        for (let i = 0; i < cm1.length; i++) {
-          xm1[i] = xL[i] + cm1[i] * diffBorders[i];
-          xm2[i] = xL[i] + cm2[i] * diffBorders[i];
+    for (let k = 0; k < optimumValuesIndex.length; k++) {
+      let j = optimumValuesIndex[k];
+      let largerSide = getMaxValue(edgeSizes[j]);
+      let largeSidesIndex = new Uint32Array(edgeSizes[j].length);
+      counter = 0;
+      for (let i = 0; i < edgeSizes[j].length; i++) {
+        if (Math.abs(edgeSizes[j][i] - largerSide) < tolerance) {
+          largeSidesIndex[counter++] = i;
         }
-        let fm1 = fun(xm1);
-        let fm2 = fun(xm2);
-        funCalls += 2;
-        w[r] = [Math.min(fm1, fm2), r];
-        C.push(cm1, cm2);
-        F.push(fm1, fm2);
       }
-      let b = w.sort((a, b) => a[0] - b[0]);
-      for (let r = 0; r < last; r++) {
-        let u = I[b[r][1]];
-        let ix1 = m + 2 * (b[r][1] + 1) - 1;
-        let ix2 = m + 2 * (b[r][1] + 1);
-        L[j][u] = delta / 2;
-        L[ix1] = L[j].slice();
-        L[ix2] = L[j].slice();
+      let delta = (2 * largerSide) / 3;
+      let bestFunctionValues = new Array(counter);
+      for (let r = 0; r < counter; r++) {
+        let i = largeSidesIndex[r];
+        let firstMiddleCenter = unitaryCoordinates[j].slice();
+        let secondMiddleCenter = unitaryCoordinates[j].slice();
+        firstMiddleCenter[i] += delta;
+        secondMiddleCenter[i] -= delta;
+        let firstMiddleValue = new Float64Array(firstMiddleCenter.length);
+        let secondMiddleValue = new Float64Array(secondMiddleCenter.length);
+        for (let i = 0; i < firstMiddleCenter.length; i++) {
+          firstMiddleValue[i] =
+            lowerBoundaries[i] + firstMiddleCenter[i] * diffBorders[i];
+          secondMiddleValue[i] =
+            lowerBoundaries[i] + secondMiddleCenter[i] * diffBorders[i];
+        }
+        let firstMinValue = objectiveFunction(firstMiddleValue);
+        let secondMinValue = objectiveFunction(secondMiddleValue);
+        fCalls += 2;
+        bestFunctionValues[r] = [Math.min(firstMinValue, secondMinValue), r];
+        unitaryCoordinates.push(firstMiddleCenter, secondMiddleCenter);
+        functionValues.push(firstMinValue, secondMinValue);
+      }
+
+      let b = bestFunctionValues.sort((a, b) => a[0] - b[0]);
+      for (let r = 0; r < counter; r++) {
+        let u = largeSidesIndex[b[r][1]];
+        let ix1 = numberOfRectangles + 2 * (b[r][1] + 1) - 1;
+        let ix2 = numberOfRectangles + 2 * (b[r][1] + 1);
+        edgeSizes[j][u] = delta / 2;
+        edgeSizes[ix1] = edgeSizes[j].slice();
+        edgeSizes[ix2] = edgeSizes[j].slice();
         let sumSquare = 0;
-        for (let i = 0; i < L[j].length; i++) {
-          sumSquare += Math.pow(L[j][i], 2);
+        for (let i = 0; i < edgeSizes[j].length; i++) {
+          sumSquare += Math.pow(edgeSizes[j][i], 2);
         }
-        D[j] = Math.sqrt(sumSquare);
-        D[ix1] = D[j];
-        D[ix2] = D[j];
+        diagonalDistances[j] = Math.sqrt(sumSquare);
+        diagonalDistances[ix1] = diagonalDistances[j];
+        diagonalDistances[ix2] = diagonalDistances[j];
       }
-      m += 2 * last;
+      numberOfRectangles += 2 * counter;
     }
+
     //--------------------------------------------------------------
     //                  Update
     //--------------------------------------------------------------
-    // console.log('F', F)
-    fMin = getMinValue(F);
-    E =
-      options.epsilon * Math.abs(fMin) > 1e-8
-        ? options.epsilon * Math.abs(fMin)
+
+    bestCurrentValue = getMinValue(functionValues);
+
+    choiceLimit =
+      epsilon * Math.abs(bestCurrentValue) > 1e-8
+        ? epsilon * Math.abs(bestCurrentValue)
         : 1e-8;
 
-    iMin = getIndexOfMin(F, D, E, fMin);
+    smallerDistance = getIndexOfMin(
+      functionValues,
+      diagonalDistances,
+      choiceLimit,
+      bestCurrentValue,
+      iteration,
+    );
 
-    d = Array.from(new Set(D));
-    d = d.sort((a, b) => a - b);
+    differentDistances = Array.from(new Set(diagonalDistances));
+    differentDistances = differentDistances.sort((a, b) => a - b);
 
-    dMin = new Array(d.length);
-    for (let i = 0; i < d.length; i++) {
+    smallerValuesByDistance = new Array(differentDistances.length);
+    for (let i = 0; i < differentDistances.length; i++) {
       let minIndex;
       let minValue = Number.POSITIVE_INFINITY;
-      for (let k = 0; k < D.length; k++) {
-        if (D[k] === d[i]) {
-          if (F[k] < minValue) {
-            minValue = F[k];
+      for (let k = 0; k < diagonalDistances.length; k++) {
+        if (diagonalDistances[k] === differentDistances[i]) {
+          if (functionValues[k] < minValue) {
+            minValue = functionValues[k];
             minIndex = k;
           }
         }
       }
-      dMin[i] = F[minIndex];
+      smallerValuesByDistance[i] = functionValues[minIndex];
     }
+
     let currentMin = [];
-    for (let j = 0; j < F.length; j++) {
-      if (F[j] === fMin) {
+    for (let j = 0; j < functionValues.length; j++) {
+      if (functionValues[j] === bestCurrentValue) {
         let temp = [];
-        for (let i = 0; i < xL.length; i++) {
-          temp[i] = xL[i] + C[j][i] * diffBorders[i];
+        for (let i = 0; i < lowerBoundaries.length; i++) {
+          temp[i] =
+            lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i];
         }
         currentMin.push(temp.slice());
       }
     }
-    t += 1;
+    iteration += 1;
   }
   //--------------------------------------------------------------
   //                  Saving results
   //--------------------------------------------------------------
 
   let result = {};
-  result.minFunctionValue = fMin; // Best function value
-  result.iterations = t; // Number of iterations
-
-  for (let j = 0; j < m; j++) {
-    // Transform to original coordinates
-    for (let i = 0; i < xL.length; i++) {
-      C[j][i] = xL[i] + C[j][i] * diffBorders[i];
+  result.minFunctionValue = bestCurrentValue;
+  result.iterations = iteration;
+  let originalCoordinates = [];
+  for (let j = 0; j < numberOfRectangles + 1; j++) {
+    let pair = [];
+    for (let i = 0; i < lowerBoundaries.length; i++) {
+      pair.push(lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i]);
     }
+    originalCoordinates.push(pair);
   }
 
-  result.finalState = { C, F, D, L, d, dMin, funCalls };
-  let xK = [];
-  for (let i = 0; i < F.length; i++) {
-    if (F[i] === fMin) {
-      xK.push(C[i]);
+  result.finalState = {
+    originalCoordinates,
+    functionValues,
+    diagonalDistances,
+    edgeSizes,
+    differentDistances,
+    smallerValuesByDistance,
+    fCalls,
+  };
+  let minimizer = [];
+  for (let i = 0; i < functionValues.length; i++) {
+    if (functionValues[i] === bestCurrentValue) {
+      minimizer.push(originalCoordinates[i]);
     }
   }
-  result.optimum = xK;
+  result.optimum = minimizer;
   return result;
 }
 

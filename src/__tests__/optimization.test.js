@@ -1,4 +1,5 @@
 import Direct from '../index';
+import antiLowerConvexHull from '../util/antiLowerConvexHull';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 
 describe('test Direct method', () => {
@@ -52,6 +53,15 @@ describe('test Direct method', () => {
     expect(predictedOptimum[1]).toBeCloseTo(optimum[1], 3);
     expect(predictedOptimum[2]).toBeCloseTo(optimum[2], 3);
     expect(predictedMinValue).toBeCloseTo(minValue, 4);
+  });
+});
+
+describe('testing lower convexhull function', () => {
+  it('Get anti clockwise lower convex hull', () => {
+    const x = [[1], [1], [2], [3], [4], [4], [2]];
+    const y = [[2], [4], [7], [6], [4], [3], [0]];
+    const lowerConvexHull = antiLowerConvexHull(x, y);
+    expect(lowerConvexHull).toStrictEqual([0, 6, 5]);
   });
 });
 
