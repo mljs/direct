@@ -18,15 +18,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheminfo/ml-direct-optimization.git"
+    "url": "git+https://github.com/cheminfo/direct-optimization.git"
   },
   "keywords": [],
   "author": "Wargner Moreno",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cheminfo/ml-direct-optimization/issues"
+    "url": "https://github.com/cheminfo/direct-optimization/issues"
   },
-  "homepage": "https://github.com/cheminfo/ml-direct-optimization#readme",
+  "homepage": "https://github.com/cheminfo/direct-optimization#readme",
   "jest": {
     "testEnvironment": "node"
   },
