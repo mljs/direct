@@ -1,7 +1,7 @@
 {
-  "name": "ml-direct-optimization",
-  "version": "0.6.0",
-  "description": "optimization",
+  "name": "ml-direct",
+  "version": "0.0.1",
+  "description": "Direct - DIviding RECTangles optimization algorithm",
   "main": "lib/index.js",
   "module": "src/index.js",
   "files": [

@@ -8,7 +8,7 @@
 The algorithm is intended to minimize real valued multivariate scalar fields over a hyper-rectangular region of N, theoretically the only prerequisite to achieve convergence is that the function must be continuous in the domain or at least continuous over a neighborhood of the global minimum. 
 
 <p align="center">
-  <img src="image/GRIEWANK_CONTOURPLOT_DIRECT.png">
+  <img src="image/griewandContourplotDirect.png">
 </p>
 
 <p align="center">
