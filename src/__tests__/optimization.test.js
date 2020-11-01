@@ -1,14 +1,14 @@
 import Direct from '../index';
-import antiLowerConvexHull from '../util/antiLowerConvexHull';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 
 describe('test Direct method', () => {
   it('Evaluating griewank test function in 3D', () => {
     const options = {
-      iterations: 25,
+      iterations: 50,
     };
-    const lowerBoundaries = [-5, -3, -2];
-    const upperBoundaries = [4, 2, 1];
+
+    const lowerBoundaries = [-5, -2];
+    const upperBoundaries = [4, 3];
 
     const predicted = Direct(
       griewank,
@@ -18,14 +18,19 @@ describe('test Direct method', () => {
     );
 
     // Theoric result
-    const optimum = [0, 0, 0];
-    const minValue = 0;
+    const optimum = [
+      [0, 0],
+      [0, 0],
+    ];
 
+    const minValue = 0;
     const predictedMinValue = predicted.minFunctionValue;
-    const predictedOptimum = Array.from(predicted.optimum[0]);
-    expect(predictedOptimum[0]).toBeCloseTo(optimum[0], 3);
-    expect(predictedOptimum[1]).toBeCloseTo(optimum[1], 3);
-    expect(predictedOptimum[2]).toBeCloseTo(optimum[2], 3);
+    const predictedOptimum0 = Array.from(predicted.optimum[0]);
+    const predictedOptimum1 = Array.from(predicted.optimum[1]);
+    expect(predictedOptimum0[0]).toBeCloseTo(optimum[0][0], 4);
+    expect(predictedOptimum0[1]).toBeCloseTo(optimum[0][1], 4);
+    expect(predictedOptimum1[0]).toBeCloseTo(optimum[1][0], 4);
+    expect(predictedOptimum1[1]).toBeCloseTo(optimum[1][1], 4);
     expect(predictedMinValue).toBeCloseTo(minValue, 7);
   });
 
@@ -53,15 +58,6 @@ describe('test Direct method', () => {
     expect(predictedOptimum[1]).toBeCloseTo(optimum[1], 3);
     expect(predictedOptimum[2]).toBeCloseTo(optimum[2], 3);
     expect(predictedMinValue).toBeCloseTo(minValue, 4);
-  });
-});
-
-describe('testing lower convexhull function', () => {
-  it('Get anti clockwise lower convex hull', () => {
-    const x = [[1], [1], [2], [3], [4], [4], [2]];
-    const y = [[2], [4], [7], [6], [4], [3], [0]];
-    const lowerConvexHull = antiLowerConvexHull(x, y);
-    expect(lowerConvexHull).toStrictEqual([0, 6, 5]);
   });
 });
 

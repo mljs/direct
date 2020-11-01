@@ -1,8 +1,6 @@
 import monotoneChainConvexHull from 'monotone-chain-convex-hull';
 
 export default function antiLowerConvexHull(x, y) {
-  x = x.map((item) => item[0]); // remove
-  y = y.map((item) => item[0]); // remove
   const pairs = new Array(x.length)
     .fill()
     .map((value, index) => (value = [x[index], y[index]]));
