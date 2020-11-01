@@ -82,7 +82,8 @@ export default function Direct(
       epsilon * Math.abs(bestCurrentValue) > 1e-8
         ? epsilon * Math.abs(bestCurrentValue)
         : 1e-8;
-    smallerDistance = getIndexOfMin(
+
+    smallerDistance = getMinIndex(
       functionValues,
       diagonalDistances,
       choiceLimit,
@@ -228,7 +229,7 @@ export default function Direct(
         ? epsilon * Math.abs(bestCurrentValue)
         : 1e-8;
 
-    smallerDistance = getIndexOfMin(
+    smallerDistance = getMinIndex(
       functionValues,
       diagonalDistances,
       choiceLimit,
@@ -292,25 +293,30 @@ export default function Direct(
     smallerValuesByDistance,
     fCalls,
   };
+
   let minimizer = [];
   for (let i = 0; i < functionValues.length; i++) {
     if (functionValues[i] === bestCurrentValue) {
       minimizer.push(originalCoordinates[i]);
     }
   }
+
   result.optimum = minimizer;
   return result;
 }
 
-function getIndexOfMin(F, D, E, fMin) {
-  let index;
-  let prevValue = Number.POSITIVE_INFINITY;
-  for (let i = 0; i < F.length; i++) {
-    let newValue = (F[i] - (fMin + E)) / D[i];
-    if (newValue < prevValue) {
-      index = i;
-      prevValue = newValue;
-    }
+function getMinIndex(
+  functionValues,
+  diagonalDistances,
+  choiceLimit,
+  bestCurrentValue,
+) {
+  let item = [];
+  for (let i = 0; i < functionValues.length; i++) {
+    item[i] =
+      Math.abs(functionValues[i] - (bestCurrentValue + choiceLimit)) /
+      diagonalDistances[i];
   }
-  return index;
+  let result = item.findIndex((x) => x === getMinValue(item));
+  return result;
 }
