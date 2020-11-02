@@ -9,19 +9,15 @@ export default function antiLowerConvexHull(x, y) {
   return lowerHull;
 }
 
-export function antiClockWiseHull(convexHull, options = {}) {
+function antiClockWiseHull(convexHull, options = {}) {
   const { hull = 'lower' } = options;
-  let moveQ = true;
   let rightPoint = 0;
   if (convexHull.length > 2) {
-    while (moveQ) {
+    while (true) {
       const difference =
         convexHull[rightPoint + 1][0] - convexHull[rightPoint][0];
-      if (difference >= 0) {
-        rightPoint++;
-      } else {
-        moveQ = false;
-      }
+      if (difference < 0) break;
+      rightPoint++;
     }
   }
 
