@@ -260,10 +260,11 @@ export default function direct(
       if (functionValues[j] === bestCurrentValue) {
         let temp = [];
         for (let i = 0; i < lowerBoundaries.length; i++) {
-          temp[i] =
-            lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i];
+          temp.push(
+            lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i],
+          );
         }
-        currentMin.push(temp.slice());
+        currentMin.push(temp);
       }
     }
     iteration += 1;
@@ -317,6 +318,7 @@ function getMinIndex(
       Math.abs(functionValues[i] - (bestCurrentValue + choiceLimit)) /
       diagonalDistances[i];
   }
-  let result = item.findIndex((x) => x === getMinValue(item));
+  const min = getMinValue(item);
+  let result = item.findIndex((x) => x === min);
   return result;
 }
