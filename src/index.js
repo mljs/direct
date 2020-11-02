@@ -4,17 +4,17 @@ import getMinValue from 'ml-array-min';
 import antiLowerConvexHull from './util/antiLowerConvexHull';
 
 /**
- * Evaluate how...
+ * Performs a global optimization of required parameters.
  * @param {function} fun - Evaluating function.
  * @param {Array} xU - Upper boundaries.
  * @param {Array} xL - Lower boundaries.
  * @param {Object} [options]
  * @param {number} [options.iterations] - Number of iterations.
- * @param {number} [options.epsilon] - Epsilon.
+ * @param {number} [options.epsilon] - Tolerance to choose best current value.
  * @param {number} [options.tol] - Minimum tollerance of the function.
  * */
 
-export default function Direct(
+export default function direct(
   objectiveFunction,
   lowerBoundaries,
   upperBoundaries,

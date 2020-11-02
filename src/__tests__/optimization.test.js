@@ -1,4 +1,4 @@
-import Direct from '../index';
+import direct from '../index';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 
 describe('test Direct method', () => {
@@ -10,7 +10,7 @@ describe('test Direct method', () => {
     const lowerBoundaries = [-5, -2];
     const upperBoundaries = [4, 3];
 
-    const predicted = Direct(
+    const predicted = direct(
       griewank,
       lowerBoundaries,
       upperBoundaries,
@@ -41,7 +41,7 @@ describe('test Direct method', () => {
     const lowerBoundaries = [-5, -1, -2];
     const upperBoundaries = [4, 2, 1];
 
-    const predicted = Direct(
+    const predicted = direct(
       rastrigin,
       lowerBoundaries,
       upperBoundaries,
