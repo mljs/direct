@@ -1,4 +1,4 @@
-import antiLowerConvexHull from '../util/antiLowerConvexHull';
+import antiLowerConvexHull from '../antiLowerConvexHull';
 
 describe('testing lower convexhull function', () => {
   it('Get anti clockwise lower convex hull', () => {
