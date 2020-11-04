@@ -39,7 +39,7 @@ const quadratic = function (x) {
   return result;
 };
 
-const predicted = Direct(
+const predicted = direct(
     quadratic,
     lowerBoundaries,
     upperBoundaries,
@@ -52,6 +52,14 @@ const predicted = Direct(
 ```
 
 ## [API Documentation](https://cheminfo.github.io/ml-direct/)
+
+## References
+
+* Jones, D. R., Perttunen, C. D., & Stuckman, B. E. (1993). Lipschitzian optimization without the Lipschitz constant. Journal of optimization Theory and Applications, 79(1), 157-181.
+ 
+* Björkman, M., & Holmström, K. (1999). Global optimization using the DIRECT algorithm in Matlab.
+ 
+* Preparata, F. P., & Shamos, M. I. (2012). Computational geometry: an introduction. Springer Science & Business Media.
 
 ## License
 

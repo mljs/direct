@@ -21,15 +21,12 @@ export default function antiLowerConvexHull(x, y) {
     let a = v;
     let b = next(v, m);
     let c = next(next(v, m), m);
-    let detA =
+    let det =
       x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
-    let leftTurn;
-    if (detA >= 0) {
-      leftTurn = 1;
-    } else {
-      leftTurn = 0;
-    }
-    if (leftTurn === 1) {
+
+    let leftTurn = det >= 0 ? true : false;
+
+    if (leftTurn) {
       v = next(v, m);
     } else {
       let j = next(v, m);
