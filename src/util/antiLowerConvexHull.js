@@ -1,38 +1,59 @@
-import monotoneChainConvexHull from 'monotone-chain-convex-hull';
-
+/**
+ * Preparata, F. P., & Shamos, M. I. (2012). Computational geometry: an introduction. Springer Science & Business Media.
+ */
 export default function antiLowerConvexHull(x, y) {
-  const pairs = new Array(x.length)
-    .fill()
-    .map((value, index) => (value = [x[index], y[index]]));
-  const convexHull = monotoneChainConvexHull(pairs);
-  const lowerHull = antiClockWiseHull(convexHull);
-  return lowerHull;
+  if (x.length !== y.length) {
+    throw new RangeError('X and Y vectors has different dimensions');
+  }
+  let m = x.length - 1;
+
+  if (m === 0) return [0];
+  if (m === 1) return [0, 1];
+
+  let start = 0;
+  let v = 0;
+  let w = x.length - 1;
+  let h = new Array(m + 1).fill().map((value, index) => index);
+  let flag = 0;
+  while (next(v, m) !== start || flag === 0) {
+    if (next(v, m) === w) flag = 1;
+
+    let a = v;
+    let b = next(v, m);
+    let c = next(next(v, m), m);
+    let detA =
+      x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
+    let leftTurn;
+    if (detA >= 0) {
+      leftTurn = 1;
+    } else {
+      leftTurn = 0;
+    }
+    if (leftTurn === 1) {
+      v = next(v, m);
+    } else {
+      let j = next(v, m);
+      x = removeElement(x, j);
+      y = removeElement(y, j);
+      h = removeElement(h, j);
+      m -= 1;
+      w -= 1;
+      v = pred(v, m);
+    }
+  }
+
+  return h;
 }
 
-function antiClockWiseHull(convexHull, options = {}) {
-  const { hull = 'lower' } = options;
-  let rightPoint = 0;
-  if (convexHull.length > 2) {
-    while (true) {
-      const difference =
-        convexHull[rightPoint + 1][0] - convexHull[rightPoint][0];
-      if (difference < 0) break;
-      rightPoint++;
-    }
-  }
+function removeElement(array, index) {
+  let result = array.slice();
+  return result.filter((x, i) => i !== index);
+}
 
-  let result = [];
-  if (hull === 'lower') {
-    result[0] = 0;
-    for (let i = 1; i < convexHull.length - rightPoint + 1; i++) {
-      result[i] = convexHull.length - i;
-    }
-  } else if (hull === 'upper') {
-    for (let i = 0; i < rightPoint + 1; i++) {
-      result[i] = rightPoint - i;
-    }
-  } else {
-    throw new RangeError(`Hull option ${hull} not implemented`);
-  }
-  return result;
+function pred(v, m) {
+  return v === 0 ? m : v - 1;
+}
+
+function next(v, m) {
+  return v === m ? 0 : v + 1;
 }

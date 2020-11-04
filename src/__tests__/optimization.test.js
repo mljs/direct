@@ -36,7 +36,7 @@ describe('test Direct method', () => {
 
   it('Evaluating rastrigin test function in 3D', () => {
     const options = {
-      iterations: 25,
+      iterations: 50,
     };
     const lowerBoundaries = [-5, -1, -2];
     const upperBoundaries = [4, 2, 1];
