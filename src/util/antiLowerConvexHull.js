@@ -5,52 +5,45 @@ export default function antiLowerConvexHull(x, y) {
   if (x.length !== y.length) {
     throw new RangeError('X and Y vectors has different dimensions');
   }
-  let m = x.length - 1;
 
-  if (m === 0) return [0];
-  if (m === 1) return [0, 1];
+  const nbPoints = x.length - 1;
+  if (nbPoints === 0) return [0];
+  if (nbPoints === 1) return [0, 1];
 
-  let start = 0;
-  let v = 0;
-  let w = x.length - 1;
-  let h = new Array(m + 1).fill().map((value, index) => index);
-  let flag = 0;
-  while (next(v, m) !== start || flag === 0) {
-    if (next(v, m) === w) flag = 1;
+  let currentPoint = 0;
+  let result = new Array(nbPoints + 1).fill().map((value, index) => index);
+  while (true) {
+    const a = currentPoint;
+    const b = next(currentPoint, nbPoints, x);
+    const c = next(next(currentPoint, nbPoints, x), nbPoints, x);
 
-    let a = v;
-    let b = next(v, m);
-    let c = next(next(v, m), m);
-    let det =
+    const det =
       x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
 
-    let leftTurn = det >= 0 ? true : false;
+    const leftTurn = det >= 0 ? true : false;
 
     if (leftTurn) {
-      v = next(v, m);
+      currentPoint = b;
     } else {
-      let j = next(v, m);
-      x = removeElement(x, j);
-      y = removeElement(y, j);
-      h = removeElement(h, j);
-      m -= 1;
-      w -= 1;
-      v = pred(v, m);
+      x[b] = -1;
+      y[b] = -1;
+      result[b] = -1;
+      currentPoint = pred(currentPoint, nbPoints, x);
     }
+    if (c === nbPoints) break;
   }
-
-  return h;
+  result = result.filter((item) => item !== -1);
+  return result;
 }
 
-function removeElement(array, index) {
-  let result = array.slice();
-  return result.filter((x, i) => i !== index);
+function pred(currentPoint, nbPoints, vector) {
+  let counter = currentPoint - 1;
+  while (vector[counter] === -1) counter--;
+  return currentPoint === 0 ? nbPoints : counter;
 }
 
-function pred(v, m) {
-  return v === 0 ? m : v - 1;
-}
-
-function next(v, m) {
-  return v === m ? 0 : v + 1;
+function next(currentPoint, nbPoints, vector) {
+  let counter = currentPoint + 1;
+  while (vector[counter] === -1) counter++;
+  return currentPoint === nbPoints ? 0 : counter;
 }
