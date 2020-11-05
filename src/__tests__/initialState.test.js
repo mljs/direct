@@ -1,8 +1,8 @@
 import direct from '../index';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 
-describe('test Direct method', () => {
-  it('Evaluating griewank test function in 3D', () => {
+describe('Initial state option', () => {
+  it('The result after two runs of 50 iterations should be equal to one of 100 iterations', () => {
     const lowerBoundaries = [-5, -2];
     const upperBoundaries = [4, 3];
 
