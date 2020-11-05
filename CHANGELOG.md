@@ -1,5 +1,13 @@
 # Changelog
 
+### [0.0.2](https://www.github.com/mljs/direct-optimization/compare/v0.0.1...v0.0.2) (2020-11-05)
+
+
+### Bug Fixes
+
+* antiLowerConvexHull testcase close [#15](https://www.github.com/mljs/direct-optimization/issues/15) ([0b55f74](https://www.github.com/mljs/direct-optimization/commit/0b55f74e3d7fe631a7b222038255b14de5faca2d))
+* finding minimum indices function ([07ae913](https://www.github.com/mljs/direct-optimization/commit/07ae913321ee6c0f7dc24dcbabfe7cf22f31716c))
+
 ### 0.0.1 (2020-10-31)
 
 
