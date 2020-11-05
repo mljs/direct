@@ -6,8 +6,8 @@ import antiLowerConvexHull from './util/antiLowerConvexHull';
 /**
  * Performs a global optimization of required parameters.
  * @param {function} fun - Evaluating function.
- * @param {Array} xU - Upper boundaries.
- * @param {Array} xL - Lower boundaries.
+ * @param {Array} lowerBoundaries - Upper boundaries.
+ * @param {Array} upperBoundaries - Lower boundaries.
  * @param {Object} [options]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.
@@ -53,6 +53,7 @@ export default function direct(
   let empty = new Array(n).fill();
   let {
     numberOfRectangles = 0,
+    totalIterations = 0,
     unitaryCoordinates = [new Float64Array(n).fill(0.5)],
     middlePoint = new Float64Array(
       empty.map((value, index) => {
@@ -74,8 +75,8 @@ export default function direct(
   } = initialState;
 
   if (
-    initialState.unitaryCoordinates &&
-    initialState.unitaryCoordinates.length > 0
+    initialState.originalCoordinates &&
+    initialState.originalCoordinates.length > 0
   ) {
     bestCurrentValue = getMinValue(functionValues);
     choiceLimit =
@@ -90,8 +91,8 @@ export default function direct(
       bestCurrentValue,
     );
 
-    unitaryCoordinates = initialState.unitaryCoordinates.slice(); //porqué usar slice aqui?
-    for (let j = 0; j < functionValues.length; j++) {
+    unitaryCoordinates = initialState.originalCoordinates.slice();
+    for (let j = 0; j < unitaryCoordinates.length; j++) {
       for (let i = 0; i < lowerBoundaries.length; i++) {
         unitaryCoordinates[j][i] =
           (unitaryCoordinates[j][i] - lowerBoundaries[i]) / diffBorders[i];
@@ -286,13 +287,18 @@ export default function direct(
   }
 
   result.finalState = {
+    numberOfRectangles,
+    totalIterations: (totalIterations += iterations),
     originalCoordinates,
-    functionValues,
-    diagonalDistances,
+    middlePoint,
+    fCalls,
+    smallerDistance,
     edgeSizes,
+    diagonalDistances,
+    functionValues,
     differentDistances,
     smallerValuesByDistance,
-    fCalls,
+    choiceLimit,
   };
 
   let minimizer = [];

@@ -1,0 +1,44 @@
+import direct from '../index';
+// Test functions from https://www.sfu.ca/~ssurjano/optimization.html
+
+describe('test Direct method', () => {
+  it('Evaluating griewank test function in 3D', () => {
+    const lowerBoundaries = [-5, -2];
+    const upperBoundaries = [4, 3];
+
+    const firstRun = direct(griewank, lowerBoundaries, upperBoundaries, {
+      iterations: 50,
+    });
+
+    const secondRun = direct(
+      griewank,
+      lowerBoundaries,
+      upperBoundaries,
+      {
+        iterations: 50,
+      },
+      firstRun.finalState, // Adding the final state from firstRun as initial state in secondRun
+    );
+
+    const thirdRun = direct(griewank, lowerBoundaries, upperBoundaries, {
+      iterations: 100,
+    });
+
+    expect(secondRun.optimum).toStrictEqual(thirdRun.optimum);
+    expect(secondRun.iterations).toStrictEqual(50);
+    expect(secondRun.finalState.totalIterations).toStrictEqual(100);
+    expect(secondRun.minFunctionValue).toStrictEqual(thirdRun.minFunctionValue);
+  });
+});
+
+function griewank(x) {
+  const d = x.length;
+  let s = 0;
+  let p = 1;
+  for (let i = 0; i < d; i++) {
+    s += Math.pow(x[i], 2) / Math.sqrt(4000);
+    p *= Math.cos(x[i] / Math.sqrt(i + 1));
+  }
+  let result = s - p + 1;
+  return result;
+}
