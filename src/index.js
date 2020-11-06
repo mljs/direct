@@ -54,19 +54,17 @@ export default function direct(
   //-------------------------------------------------------------------------
   let n = lowerBoundaries.length;
   let diffBorders = upperBoundaries.map((x, i) => x - lowerBoundaries[i]);
-  let empty = new Array(n).fill();
+
   let {
     numberOfRectangles = 0,
     totalIterations = 0,
     unitaryCoordinates = [new Float64Array(n).fill(0.5)],
-    middlePoint = new Float64Array(
-      empty.map((value, index) => {
-        return (
-          lowerBoundaries[index] +
-          unitaryCoordinates[0][index] * diffBorders[index]
-        );
-      }),
-    ),
+    middlePoint = new Float64Array(n).map((value, index) => {
+      return (
+        lowerBoundaries[index] +
+        unitaryCoordinates[0][index] * diffBorders[index]
+      );
+    }),
     bestCurrentValue = objectiveFunction(middlePoint),
     fCalls = 1,
     smallerDistance = 0,
