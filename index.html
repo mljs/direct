@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset='utf-8'>
-  <title>ml-direct 0.0.1 | Documentation</title>
+  <title>ml-direct 0.1.0 | Documentation</title>
   <meta name='description' content='Direct - DIviding RECTangles optimization algorithm'>
   <meta name='viewport' content='width=device-width,initial-scale=1'>
   <link href='assets/bass.css' rel='stylesheet'>
@@ -15,7 +15,7 @@
       <div id='split-left' class='overflow-auto fs0 height-viewport-100'>
         <div class='py1 px2'>
           <h3 class='mb0 no-anchor'>ml-direct</h3>
-          <div class='mb1'><code>0.0.1</code></div>
+          <div class='mb1'><code>0.1.0</code></div>
           <input
             placeholder='Filter'
             id='filter-input'
@@ -29,9 +29,29 @@
               
                 
                 <li><a
+                  href='#antilowerconvexhull'
+                  class="">
+                  antiLowerConvexHull
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#direct'
                   class="">
-                  Direct
+                  direct
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#moveback'
+                  class="">
+                  moveBack
                   
                 </a>
                 
@@ -52,21 +72,21 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='direct'>
-      Direct
+    <h3 class='fl m0' id='antilowerconvexhull'>
+      antiLowerConvexHull
     </h3>
     
     
-      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/mljs/direct-optimization/blob/bd68ab7cb4b5da0e376c0ac7e82b2565e39e99c0/src/index.js#L17-L303'>
-      <span>src/index.js</span>
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/mljs/direct-optimization/blob/078f1e038f959372b13a8b8f1f5285c25a67f953/src/util/antiLowerConvexHull.js#L7-L40'>
+      <span>src/util/antiLowerConvexHull.js</span>
       </a>
     
   </div>
   
 
-  <p>Evaluate how...</p>
+  <p>Preparata, F. P., &#x26; Shamos, M. I. (2012). Computational geometry: an introduction. Springer Science &#x26; Business Media.</p>
 
-    <div class='pre p1 fill-light mt0'>new Direct(objectiveFunction: any, lowerBoundaries: any, upperBoundaries: any, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?, initialState: any, fun: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>, xU: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>, xL: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</div>
+    <div class='pre p1 fill-light mt0'>antiLowerConvexHull(x: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>, y: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></div>
   
   
 
@@ -83,31 +103,126 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>objectiveFunction</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>x</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    The array with x coordinates of the points.
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>lowerBoundaries</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>y</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    The array with y coordinates of the points.
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a></code>:
+        The indices of the points of anticlockwise lower convex hull
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='direct'>
+      direct
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/mljs/direct-optimization/blob/078f1e038f959372b13a8b8f1f5285c25a67f953/src/index.js#L26-L320'>
+      <span>src/index.js</span>
+      </a>
+    
+  </div>
+  
+
+  <p>Performs a global optimization of required parameters
+It will return an object containing:</p>
+<ul>
+<li><code>minFunctionValue</code>: The minimum value found for the objetive function</li>
+<li><code>optima</code>: Array of Array of values for all the variables where the function reach its minimum value</li>
+<li><code>iterations</code>: Number of iterations performed in the process</li>
+<li><code>finalState</code>: Internal state allowing to continue optimization (initialState)</li>
+</ul>
+
+    <div class='pre p1 fill-light mt0'>direct(objectiveFunction: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>, lowerBoundaries: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>, upperBoundaries: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>, options: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>objectiveFunction</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
+	    Function to evaluate. It should accept an array of variables
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>upperBoundaries</span> <code class='quiet'>(any)</code>
-	    
+            <span class='code bold'>lowerBoundaries</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    Array containing for each variable the lower boundary
+
           </div>
           
         </div>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>?
+            <span class='code bold'>upperBoundaries</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    Array containing for each variable the higher boundary
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>options</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a>
             = <code>{}</code>)</code>
 	    
           </div>
@@ -137,16 +252,36 @@
                 <tr>
   <td class='break-word'><span class='code bold'>options.epsilon</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?</code>
   </td>
-  <td class='break-word'><span>Epsilon.
+  <td class='break-word'><span>Tolerance to choose best current value.
 </span></td>
 </tr>
 
 
               
                 <tr>
-  <td class='break-word'><span class='code bold'>options.tol</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?</code>
+  <td class='break-word'><span class='code bold'>options.tolerance</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?</code>
   </td>
   <td class='break-word'><span>Minimum tollerance of the function.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.tolerance2</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>?</code>
+  </td>
+  <td class='break-word'><span>Minimum tollerance of the function.
+</span></td>
+</tr>
+
+
+              
+                <tr>
+  <td class='break-word'><span class='code bold'>options.initialState</span> <code class='quiet'><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>
+  
+    (default <code>{}}</code>)
+  </td>
+  <td class='break-word'><span>finalState of previous optimization.
 </span></td>
 </tr>
 
@@ -157,19 +292,76 @@
           
         </div>
       
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>initialState</span> <code class='quiet'>(any
-            = <code>{}</code>)</code>
-	    
-          </div>
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">Object</a></code>:
+        {finalState, iterations, minFunctionValue}
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
           
-        </div>
+        
+          
+          <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='moveback'>
+      moveBack
+    </h3>
+    
+    
+      <a class='fr fill-darken0 round round pad1x quiet h5' href='https://github.com/mljs/direct-optimization/blob/078f1e038f959372b13a8b8f1f5285c25a67f953/src/util/antiLowerConvexHull.js#L49-L53'>
+      <span>src/util/antiLowerConvexHull.js</span>
+      </a>
+    
+  </div>
+  
+
+  
+    <div class='pre p1 fill-light mt0'>moveBack(currentPoint: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, nbPoints: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, vector: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>fun</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Statements/function">function</a>)</code>
-	    Evaluating function.
+            <span class='code bold'>currentPoint</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The index of the current point to make the move
 
           </div>
           
@@ -177,8 +369,8 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>xU</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
-	    Upper boundaries.
+            <span class='code bold'>nbPoints</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The total number of points in the array
 
           </div>
           
@@ -186,8 +378,8 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>xL</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
-	    Lower boundaries.
+            <span class='code bold'>vector</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">Array</a>)</code>
+	    The array with the points
 
           </div>
           
@@ -198,6 +390,14 @@
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        the index of the point after the move
+
+      
+    
   
 
   
