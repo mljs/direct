@@ -7,6 +7,29 @@
 
 The algorithm is intended to minimize real valued multivariate scalar fields over a hyper-rectangular region of N, theoretically the only prerequisite to achieve convergence is that the function must be continuous in the domain or at least continuous over a neighborhood of the global minimum. 
 
+## Example 1
+
+```js
+import direct from 'ml-direct';
+
+    const options = {
+      iterations: 50,
+    };
+
+    const lowerBoundaries = [-1, -1.5];
+    const upperBoundaries = [2, 6];
+
+    const predicted = direct(
+      griewank,
+      lowerBoundaries,
+      upperBoundaries,
+      options,
+    );
+
+// predicted.minFunctionValue = 0; 
+// Array.from(predicted.optimum[0]) = [0, 0]; This are the points where the funcion has minimum value
+```
+
 <p align="center">
   <img src="image/griewandContourplotDirect.png">
 </p>
@@ -19,6 +42,21 @@ The algorithm is intended to minimize real valued multivariate scalar fields ove
 
 `$ npm i ml-direct`
 
+**Arguments**
+
+* `objectiveFunction`: Evaluating function.
+* `lowerBoundaries`: Allowed lower boundaries.
+* `upperBoundaries`: Allowed upper boundaries.
+* `options`: options.
+
+**Output**
+
+* `minFunctionValue`: The minimum value found for the objetive function.
+* `optima`: These are the points where the function reach its minimum value.
+* `iterations`: Iterations performed in the process.
+* `finalState`: Saves information of how the search space were partionioned, the minimum value and function callbacks.
+
+
 ## Usage
 
 ```js
@@ -28,15 +66,15 @@ const options = {
     iterations: 25,
 };
 
-const lowerBoundaries = [-5, 3];
-const upperBoundaries = [4, -2];
+// for x we explore values between -5 and 4
+// for y we explore values between -2 and 3
 
-const quadratic = function (x) {
-  let result = 0;
-  for (let i = 0; i < x.length; i++) {
-    result += Math.pow(x[i], 2);
-  }
-  return result;
+const lowerBoundaries = [-5, -2]; 
+const upperBoundaries = [4, 3];
+
+const quadratic = function (parameters) {
+  let [x, y] = parameters;
+  return Math.pow(x, 2) + Math.pow(y, 2);
 };
 
 const predicted = direct(
@@ -46,7 +84,7 @@ const predicted = direct(
     options,
 );
 
-// predicted.minFunctionValue = 0
+// predicted.minFunctionValue = 0;
 // Array.from(predicted.optimum[0]) = [0, 0];
 
 ```

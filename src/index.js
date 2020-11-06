@@ -1,17 +1,21 @@
 import getMaxValue from 'ml-array-max';
 import getMinValue from 'ml-array-min';
+import { xNorm } from 'ml-spectra-processing';
 
 import antiLowerConvexHull from './util/antiLowerConvexHull';
 
 /**
  * Performs a global optimization of required parameters.
- * @param {function} fun - Evaluating function.
- * @param {Array} xU - Upper boundaries.
- * @param {Array} xL - Lower boundaries.
- * @param {Object} [options]
+ * @param {function} objectiveFunction - Evaluating function.
+ * @param {Array} lowerBoundaries - Upper boundaries.
+ * @param {Array} upperBoundaries - Lower boundaries.
+ * @param {Object} [options={}]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.
- * @param {number} [options.tol] - Minimum tollerance of the function.
+ * @param {number} [options.tolerance] - Minimum tollerance of the function.
+ * @param {number} [options.tolerance2] - Minimum tollerance of the function.
+ * @param {Object} [options.initialState={}}] - finalState of previous optimization.
+ * @return {Object} {finalState, iterations, minFunctionValue}
  * */
 
 export default function direct(
@@ -19,13 +23,13 @@ export default function direct(
   lowerBoundaries,
   upperBoundaries,
   options = {},
-  initialState = {},
 ) {
   const {
     iterations = 50,
     epsilon = 1e-4,
     tolerance = 1e-16,
     tolerance2 = 1e-12,
+    initialState = {},
   } = options;
 
   if (
@@ -53,6 +57,7 @@ export default function direct(
   let empty = new Array(n).fill();
   let {
     numberOfRectangles = 0,
+    totalIterations = 0,
     unitaryCoordinates = [new Float64Array(n).fill(0.5)],
     middlePoint = new Float64Array(
       empty.map((value, index) => {
@@ -72,10 +77,9 @@ export default function direct(
     smallerValuesByDistance = [bestCurrentValue],
     choiceLimit = undefined,
   } = initialState;
-
   if (
-    initialState.unitaryCoordinates &&
-    initialState.unitaryCoordinates.length > 0
+    initialState.originalCoordinates &&
+    initialState.originalCoordinates.length > 0
   ) {
     bestCurrentValue = getMinValue(functionValues);
     choiceLimit =
@@ -90,8 +94,8 @@ export default function direct(
       bestCurrentValue,
     );
 
-    unitaryCoordinates = initialState.unitaryCoordinates.slice(); //porqué usar slice aqui?
-    for (let j = 0; j < functionValues.length; j++) {
+    unitaryCoordinates = initialState.originalCoordinates.slice();
+    for (let j = 0; j < unitaryCoordinates.length; j++) {
       for (let i = 0; i < lowerBoundaries.length; i++) {
         unitaryCoordinates[j][i] =
           (unitaryCoordinates[j][i] - lowerBoundaries[i]) / diffBorders[i];
@@ -145,11 +149,12 @@ export default function direct(
           S2[counter++] = j;
         }
       }
-      let xHull = new Array(counter);
-      let yHull = new Array(counter);
-      for (let i = 0; i < xHull.length; i++) {
-        xHull[i] = [diagonalDistances[S2[i]]];
-        yHull[i] = [functionValues[S2[i]]];
+
+      let xHull = [];
+      let yHull = [];
+      for (let i = 0; i < counter; i++) {
+        xHull.push(diagonalDistances[S2[i]]);
+        yHull.push(functionValues[S2[i]]);
       }
 
       let lowerIndexHull = antiLowerConvexHull(xHull, yHull);
@@ -194,24 +199,24 @@ export default function direct(
         let firstMinValue = objectiveFunction(firstMiddleValue);
         let secondMinValue = objectiveFunction(secondMiddleValue);
         fCalls += 2;
-        bestFunctionValues[r] = [Math.min(firstMinValue, secondMinValue), r];
+        bestFunctionValues[r] = {
+          minValue: Math.min(firstMinValue, secondMinValue),
+          index: r,
+        };
+        // [Math.min(firstMinValue, secondMinValue), r];
         unitaryCoordinates.push(firstMiddleCenter, secondMiddleCenter);
         functionValues.push(firstMinValue, secondMinValue);
       }
 
-      let b = bestFunctionValues.sort((a, b) => a[0] - b[0]);
+      let b = bestFunctionValues.sort((a, b) => a.minValue - b.minValue);
       for (let r = 0; r < counter; r++) {
-        let u = largeSidesIndex[b[r][1]];
-        let ix1 = numberOfRectangles + 2 * (b[r][1] + 1) - 1;
-        let ix2 = numberOfRectangles + 2 * (b[r][1] + 1);
+        let u = largeSidesIndex[b[r].index];
+        let ix1 = numberOfRectangles + 2 * (b[r].index + 1) - 1;
+        let ix2 = numberOfRectangles + 2 * (b[r].index + 1);
         edgeSizes[j][u] = delta / 2;
         edgeSizes[ix1] = edgeSizes[j].slice();
         edgeSizes[ix2] = edgeSizes[j].slice();
-        let sumSquare = 0;
-        for (let i = 0; i < edgeSizes[j].length; i++) {
-          sumSquare += Math.pow(edgeSizes[j][i], 2);
-        }
-        diagonalDistances[j] = Math.sqrt(sumSquare);
+        diagonalDistances[j] = xNorm(edgeSizes[j]);
         diagonalDistances[ix1] = diagonalDistances[j];
         diagonalDistances[ix2] = diagonalDistances[j];
       }
@@ -286,13 +291,18 @@ export default function direct(
   }
 
   result.finalState = {
+    numberOfRectangles,
+    totalIterations: (totalIterations += iterations),
     originalCoordinates,
-    functionValues,
-    diagonalDistances,
+    middlePoint,
+    fCalls,
+    smallerDistance,
     edgeSizes,
+    diagonalDistances,
+    functionValues,
     differentDistances,
     smallerValuesByDistance,
-    fCalls,
+    choiceLimit,
   };
 
   let minimizer = [];
@@ -302,7 +312,7 @@ export default function direct(
     }
   }
 
-  result.optimum = minimizer;
+  result.optima = minimizer;
   return result;
 }
 

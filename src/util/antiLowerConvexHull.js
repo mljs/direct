@@ -1,5 +1,8 @@
 /**
  * Preparata, F. P., & Shamos, M. I. (2012). Computational geometry: an introduction. Springer Science & Business Media.
+ * @param {Array} x - The array with x coordinates of the points.
+ * @param {Array} y - The array with y coordinates of the points.
+ * @return {Array} The indices of the points of anticlockwise lower convex hull
  */
 export default function antiLowerConvexHull(x, y) {
   if (x.length !== y.length) {
@@ -11,11 +14,11 @@ export default function antiLowerConvexHull(x, y) {
   if (nbPoints === 1) return [0, 1];
 
   let currentPoint = 0;
-  let result = new Array(nbPoints + 1).fill().map((value, index) => index);
+  let result = new Array(x.length).fill(true);
   while (true) {
     const a = currentPoint;
-    const b = next(currentPoint, nbPoints, x);
-    const c = next(next(currentPoint, nbPoints, x), nbPoints, x);
+    const b = moveOn(currentPoint, nbPoints, result);
+    const c = moveOn(moveOn(currentPoint, nbPoints, result), nbPoints, result);
 
     const det =
       x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
@@ -25,25 +28,32 @@ export default function antiLowerConvexHull(x, y) {
     if (leftTurn) {
       currentPoint = b;
     } else {
-      x[b] = -1;
-      y[b] = -1;
-      result[b] = -1;
-      currentPoint = pred(currentPoint, nbPoints, x);
+      result[b] = false;
+      currentPoint = moveBack(currentPoint, nbPoints, result);
     }
     if (c === nbPoints) break;
   }
-  result = result.filter((item) => item !== -1);
-  return result;
+
+  return result
+    .map((item, index) => (item === false ? false : index))
+    .filter((item) => item !== false);
 }
 
-function pred(currentPoint, nbPoints, vector) {
+/**
+ * @param {number} currentPoint - The index of the current point to make the move
+ * @param {number} nbPoints - The total number of points in the array
+ * @param {Array} vector - The array with the points
+ * @return {number} the index of the point after the move
+ */
+
+function moveBack(currentPoint, nbPoints, vector) {
   let counter = currentPoint - 1;
-  while (vector[counter] === -1) counter--;
+  while (vector[counter] === false) counter--;
   return currentPoint === 0 ? nbPoints : counter;
 }
 
-function next(currentPoint, nbPoints, vector) {
+function moveOn(currentPoint, nbPoints, vector) {
   let counter = currentPoint + 1;
-  while (vector[counter] === -1) counter++;
+  while (vector[counter] === false) counter++;
   return currentPoint === nbPoints ? 0 : counter;
 }
