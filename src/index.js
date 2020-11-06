@@ -5,10 +5,15 @@ import { xNorm } from 'ml-spectra-processing';
 import antiLowerConvexHull from './util/antiLowerConvexHull';
 
 /**
- * Performs a global optimization of required parameters.
- * @param {function} objectiveFunction - Evaluating function.
- * @param {Array} lowerBoundaries - Upper boundaries.
- * @param {Array} upperBoundaries - Lower boundaries.
+ * Performs a global optimization of required parameters
+ * It will return an object containing:
+ * - `minFunctionValue`: The minimum value found for the objetive function
+ * - `optima`: Array of Array of values for all the variables where the function reach its minimum value
+ * - `iterations`: Number of iterations performed in the process
+ * - `finalState`: Internal state allowing to continue optimization (initialState)
+ * @param {function} objectiveFunction Function to evaluate. It should accept an array of variables
+ * @param {Array} lowerBoundaries Array containing for each variable the lower boundary
+ * @param {Array} upperBoundaries Array containing for each variable the higher boundary
  * @param {Object} [options={}]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.

@@ -7,7 +7,7 @@
 
 The algorithm is intended to minimize real valued multivariate scalar fields over a hyper-rectangular region of N, theoretically the only prerequisite to achieve convergence is that the function must be continuous in the domain or at least continuous over a neighborhood of the global minimum. 
 
-## Example 1
+## Advanced example
 
 ```js
 import direct from 'ml-direct';
@@ -26,8 +26,8 @@ import direct from 'ml-direct';
       options,
     );
 
-// predicted.minFunctionValue = 0; 
-// Array.from(predicted.optimum[0]) = [0, 0]; This are the points where the funcion has minimum value
+// predicted.minFunctionValue = 0;
+// predicted.optimum[0] = [0, 0]; This are the points where the function has minimum value
 ```
 
 <p align="center">
@@ -41,20 +41,6 @@ import direct from 'ml-direct';
 ## Installation
 
 `$ npm i ml-direct`
-
-**Arguments**
-
-* `objectiveFunction`: Evaluating function.
-* `lowerBoundaries`: Allowed lower boundaries.
-* `upperBoundaries`: Allowed upper boundaries.
-* `options`: options.
-
-**Output**
-
-* `minFunctionValue`: The minimum value found for the objetive function.
-* `optima`: These are the points where the function reach its minimum value.
-* `iterations`: Iterations performed in the process.
-* `finalState`: Saves information of how the search space were partionioned, the minimum value and function callbacks.
 
 
 ## Usage
