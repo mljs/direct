@@ -39,7 +39,7 @@ import direct from 'ml-direct';
     }
 
 // predicted.minFunctionValue = 0;
-// predicted.optimum[0] = [0, 0]; This are the points where the function has minimum value
+// predicted.optima[0] = [0, 0]; This are the points where the function has minimum value
 ```
 
 <p align="center">
@@ -83,7 +83,7 @@ const predicted = direct(
 );
 
 // predicted.minFunctionValue = 0;
-// Array.from(predicted.optimum[0]) = [0, 0];
+// predicted.optima[0] = [0, 0];
 
 ```
 
