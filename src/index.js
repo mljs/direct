@@ -181,7 +181,7 @@ export default function direct(
         }
       }
       let delta = (2 * largerSide) / 3;
-      let bestFunctionValues = new Array(counter);
+      let bestFunctionValues = [];
       for (let r = 0; r < counter; r++) {
         let i = largeSidesIndex[r];
         let firstMiddleCenter = unitaryCoordinates[j].slice();
@@ -199,10 +199,10 @@ export default function direct(
         let firstMinValue = objectiveFunction(firstMiddleValue);
         let secondMinValue = objectiveFunction(secondMiddleValue);
         fCalls += 2;
-        bestFunctionValues[r] = {
+        bestFunctionValues.push({
           minValue: Math.min(firstMinValue, secondMinValue),
           index: r,
-        };
+        });
         // [Math.min(firstMinValue, secondMinValue), r];
         unitaryCoordinates.push(firstMiddleCenter, secondMiddleCenter);
         functionValues.push(firstMinValue, secondMinValue);
@@ -245,7 +245,7 @@ export default function direct(
     differentDistances = Array.from(new Set(diagonalDistances));
     differentDistances = differentDistances.sort((a, b) => a - b);
 
-    smallerValuesByDistance = new Array(differentDistances.length);
+    smallerValuesByDistance = [];
     for (let i = 0; i < differentDistances.length; i++) {
       let minIndex;
       let minValue = Number.POSITIVE_INFINITY;
@@ -257,7 +257,7 @@ export default function direct(
           }
         }
       }
-      smallerValuesByDistance[i] = functionValues[minIndex];
+      smallerValuesByDistance.push(functionValues[minIndex]);
     }
 
     let currentMin = [];
