@@ -26,6 +26,18 @@ import direct from 'ml-direct';
       options,
     );
 
+    function griewank(x) {
+      let d = x.length;
+      let s = 0;
+      let p = 1;
+      for (let i = 0; i < d; i++) {
+        s += Math.pow(x[i], 2) / Math.sqrt(4000);
+        p *= Math.cos(x[i] / Math.sqrt(i + 1));
+      }
+      let result = s - p + 1;
+      return result;
+    }
+
 // predicted.minFunctionValue = 0;
 // predicted.optimum[0] = [0, 0]; This are the points where the function has minimum value
 ```
