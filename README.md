@@ -28,15 +28,15 @@ const options = {
     iterations: 25,
 };
 
-const lowerBoundaries = [-5, 3];
-const upperBoundaries = [4, -2];
+// for x we explore values between -5 and 4
+// for y we explore values between -2 and 3
 
-const quadratic = function (x) {
-  let result = 0;
-  for (let i = 0; i < x.length; i++) {
-    result += Math.pow(x[i], 2);
-  }
-  return result;
+const lowerBoundaries = [-5, -2]; 
+const upperBoundaries = [4, 3];
+
+const quadratic = function (parameters) {
+  let [x, y] = parameters;
+  return Math.pow(x, 2) + Math.pow(y, 2);
 };
 
 const predicted = direct(
