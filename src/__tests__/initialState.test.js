@@ -10,15 +10,10 @@ describe('Initial state option', () => {
       iterations: 50,
     });
 
-    const secondRun = direct(
-      griewank,
-      lowerBoundaries,
-      upperBoundaries,
-      {
-        iterations: 50,
-      },
-      firstRun.finalState, // Adding the final state from firstRun as initial state in secondRun
-    );
+    const secondRun = direct(griewank, lowerBoundaries, upperBoundaries, {
+      iterations: 50,
+      initialState: firstRun.finalState, // Adding the final state from firstRun as initial state in secondRun
+    });
 
     const thirdRun = direct(griewank, lowerBoundaries, upperBoundaries, {
       iterations: 100,

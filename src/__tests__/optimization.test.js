@@ -25,8 +25,8 @@ describe('test Direct method', () => {
 
     const minValue = 0;
     const predictedMinValue = predicted.minFunctionValue;
-    const predictedOptimum0 = Array.from(predicted.optimum[0]);
-    const predictedOptimum1 = Array.from(predicted.optimum[1]);
+    const predictedOptimum0 = Array.from(predicted.optima[0]);
+    const predictedOptimum1 = Array.from(predicted.optima[1]);
     expect(predictedOptimum0[0]).toBeCloseTo(optimum[0][0], 4);
     expect(predictedOptimum0[1]).toBeCloseTo(optimum[0][1], 4);
     expect(predictedOptimum1[0]).toBeCloseTo(optimum[1][0], 4);
@@ -53,7 +53,7 @@ describe('test Direct method', () => {
     const minValue = 0;
 
     const predictedMinValue = predicted.minFunctionValue;
-    const predictedOptimum = Array.from(predicted.optimum[0]);
+    const predictedOptimum = Array.from(predicted.optima[0]);
     expect(predictedOptimum[0]).toBeCloseTo(optimum[0], 3);
     expect(predictedOptimum[1]).toBeCloseTo(optimum[1], 3);
     expect(predictedOptimum[2]).toBeCloseTo(optimum[2], 3);
