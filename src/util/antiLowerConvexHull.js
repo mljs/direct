@@ -14,10 +14,11 @@ export default function antiLowerConvexHull(x, y) {
   if (nbPoints === 1) return [0, 1];
 
   let currentPoint = 0;
+  let result = new Array(x.length).fill(true);
   while (true) {
     const a = currentPoint;
-    const b = moveOn(currentPoint, nbPoints, x);
-    const c = moveOn(moveOn(currentPoint, nbPoints, x), nbPoints, x);
+    const b = moveOn(currentPoint, nbPoints, result);
+    const c = moveOn(moveOn(currentPoint, nbPoints, result), nbPoints, result);
 
     const det =
       x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
@@ -27,15 +28,15 @@ export default function antiLowerConvexHull(x, y) {
     if (leftTurn) {
       currentPoint = b;
     } else {
-      x[b] = -1;
-      y[b] = -1;
-      currentPoint = moveBack(currentPoint, nbPoints, x);
+      result[b] = false;
+      currentPoint = moveBack(currentPoint, nbPoints, result);
     }
     if (c === nbPoints) break;
   }
-  return x
-    .map((item, index) => (item === -1 ? -1 : index))
-    .filter((item) => item >= 0);
+
+  return result
+    .map((item, index) => (item === false ? false : index))
+    .filter((item) => item !== false);
 }
 
 /**
@@ -47,12 +48,12 @@ export default function antiLowerConvexHull(x, y) {
 
 function moveBack(currentPoint, nbPoints, vector) {
   let counter = currentPoint - 1;
-  while (vector[counter] === -1) counter--;
+  while (vector[counter] === false) counter--;
   return currentPoint === 0 ? nbPoints : counter;
 }
 
 function moveOn(currentPoint, nbPoints, vector) {
   let counter = currentPoint + 1;
-  while (vector[counter] === -1) counter++;
+  while (vector[counter] === false) counter++;
   return currentPoint === nbPoints ? 0 : counter;
 }
