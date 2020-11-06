@@ -3,6 +3,7 @@
  * @param {Array} x - The array with x coordinates of the points.
  * @param {Array} y - The array with y coordinates of the points.
  * @return {Array} The indices of the points of anticlockwise lower convex hull
+ * @private
  */
 export default function antiLowerConvexHull(x, y) {
   if (x.length !== y.length) {
@@ -44,6 +45,7 @@ export default function antiLowerConvexHull(x, y) {
  * @param {number} nbPoints - The total number of points in the array
  * @param {Array} vector - The array with the points
  * @return {number} the index of the point after the move
+ * @private
  */
 
 function moveBack(currentPoint, nbPoints, vector) {
