@@ -20,8 +20,8 @@ describe('Initial state option', () => {
     });
 
     expect(secondRun.optimum).toStrictEqual(thirdRun.optimum);
-    expect(secondRun.iterations).toStrictEqual(50);
-    expect(secondRun.finalState.totalIterations).toStrictEqual(100);
+    expect(secondRun.iterations).toBe(50);
+    expect(secondRun.finalState.totalIterations).toBe(100);
     expect(secondRun.minFunctionValue).toStrictEqual(thirdRun.minFunctionValue);
   });
 });
