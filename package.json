@@ -41,10 +41,7 @@
     "rollup": "^2.69.0"
   },
   "dependencies": {
-    "ml-array-max": "^1.2.4",
-    "ml-array-min": "^1.2.3",
     "ml-matrix": "^6.9.0",
-    "ml-optimize-lorentzian": "^0.2.0",
-    "ml-spectra-processing": "^11.0.0"
+    "ml-spectra-processing": "^11.12.0"
   }
 }

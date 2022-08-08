@@ -1,6 +1,4 @@
-import getMaxValue from 'ml-array-max';
-import getMinValue from 'ml-array-min';
-import { xNorm } from 'ml-spectra-processing';
+import { xNorm, xMaxValue, xMinValue } from 'ml-spectra-processing';
 
 import antiLowerConvexHull from './util/antiLowerConvexHull';
 
@@ -84,7 +82,7 @@ export default function direct(
     initialState.originalCoordinates &&
     initialState.originalCoordinates.length > 0
   ) {
-    bestCurrentValue = getMinValue(functionValues);
+    bestCurrentValue = xMinValue(functionValues);
     choiceLimit =
       epsilon * Math.abs(bestCurrentValue) > 1e-8
         ? epsilon * Math.abs(bestCurrentValue)
@@ -175,7 +173,7 @@ export default function direct(
     //--------------------------------------------------------------
     for (let k = 0; k < optimumValuesIndex.length; k++) {
       let j = optimumValuesIndex[k];
-      let largerSide = getMaxValue(edgeSizes[j]);
+      let largerSide = xMaxValue(edgeSizes[j]);
       let largeSidesIndex = new Uint32Array(edgeSizes[j].length);
       counter = 0;
       for (let i = 0; i < edgeSizes[j].length; i++) {
@@ -230,7 +228,7 @@ export default function direct(
     //                  Update
     //--------------------------------------------------------------
 
-    bestCurrentValue = getMinValue(functionValues);
+    bestCurrentValue = xMinValue(functionValues);
 
     choiceLimit =
       epsilon * Math.abs(bestCurrentValue) > 1e-8
@@ -331,7 +329,7 @@ function getMinIndex(
       Math.abs(functionValues[i] - (bestCurrentValue + choiceLimit)) /
       diagonalDistances[i];
   }
-  const min = getMinValue(item);
+  const min = xMinValue(item);
   let result = item.findIndex((x) => x === min);
   return result;
 }
