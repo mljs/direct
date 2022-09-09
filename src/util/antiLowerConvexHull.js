@@ -24,7 +24,7 @@ export default function antiLowerConvexHull(x, y) {
     const det =
       x[c] * (y[a] - y[b]) + x[a] * (y[b] - y[c]) + x[b] * (y[c] - y[a]);
 
-    const leftTurn = det >= 0 ? true : false;
+    const leftTurn = det >= 0;
 
     if (leftTurn) {
       currentPoint = b;
