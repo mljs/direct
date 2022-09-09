@@ -20,15 +20,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/cheminfo/direct-optimization.git"
+    "url": "git+https://github.com/mljs/direct.git"
   },
   "keywords": [],
   "author": "Wargner Moreno",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/cheminfo/direct-optimization/issues"
+    "url": "https://github.com/mljs/direct/issues"
   },
-  "homepage": "https://github.com/cheminfo/direct-optimization#readme",
+  "homepage": "https://github.com/mljs/direct#readme",
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.16.8",
     "cheminfo-build": "^1.1.11",
