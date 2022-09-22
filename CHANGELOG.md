@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.1](https://github.com/mljs/direct/compare/v0.1.0...v0.1.1) (2022-09-22)
+
+
+### Bug Fixes
+
+* add type file declaration ([#34](https://github.com/mljs/direct/issues/34)) ([7ec0ec6](https://github.com/mljs/direct/commit/7ec0ec6ae2bfb7fd6369a9191a9566b6407fc4f2))
+* remove useless dependencies ([2069725](https://github.com/mljs/direct/commit/20697254f30e6c40babc8688c2f72dc18ae3e0df))
+
 ## [0.1.0](https://www.github.com/mljs/direct/compare/v0.0.1...v0.1.0) (2020-11-06)
 
 ### Features
