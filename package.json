@@ -4,9 +4,11 @@
   "description": "Direct - DIviding RECTangles optimization algorithm",
   "main": "lib/index.js",
   "module": "src/index.js",
+  "types": "ml-direct.d.ts",
   "files": [
     "lib",
-    "src"
+    "src",
+    "ml-direct.d.ts"
   ],
   "scripts": {
     "build": "cheminfo-build --entry src/index.js --root Direct",
