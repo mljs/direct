@@ -1,6 +1,7 @@
 # ml-direct
 
 [![NPM version][npm-image]][npm-url]
+[![build status][ci-image]][ci-url]
 [![npm download][download-image]][download-url]
 
 # Direct - DIviding RECTangles algorithm.
@@ -89,9 +90,9 @@ const predicted = direct(quadratic, lowerBoundaries, upperBoundaries, options);
 
 [MIT](./LICENSE)
 
-[npm-image]: https://img.shields.io/npm/v/direct.svg
-[npm-url]: https://www.npmjs.com/package/direct
+[npm-image]: https://img.shields.io/npm/v/ml-direct.svg
+[npm-url]: https://www.npmjs.com/package/ml-direct
 [ci-image]: https://github.com/mljs/direct/workflows/Node.js%20CI/badge.svg?branch=main
 [ci-url]: https://github.com/mljs/direct/actions?query=workflow%3A%22Node.js+CI%22
-[download-image]: https://img.shields.io/npm/dm/direct.svg
-[download-url]: https://www.npmjs.com/package/direct
+[download-image]: https://img.shields.io/npm/dm/ml-direct.svg
+[download-url]: https://www.npmjs.com/package/ml-direct
