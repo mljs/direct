@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/mljs/direct/compare/v0.1.2...v0.1.3) (2023-03-24)
+
+
+### Bug Fixes
+
+* rollup extension for new version ([d3cea4c](https://github.com/mljs/direct/commit/d3cea4c21ab5a24bded9c58fc3aad6570804e557))
+
 ## [0.1.2](https://github.com/mljs/direct/compare/v0.1.1...v0.1.2) (2023-03-24)
 
 
