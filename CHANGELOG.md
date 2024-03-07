@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.0.0](https://github.com/mljs/direct/compare/v0.1.3...v1.0.0) (2024-03-07)
+
+
+### release-as
+
+* v1.0.0 ([add7670](https://github.com/mljs/direct/commit/add7670a5328483a3a529ee2ab4b2a5ca7ee98c6))
+
+
+### Bug Fixes
+
+* update dependencies ([92f780a](https://github.com/mljs/direct/commit/92f780a23a17c60cc749cad5276975f78cb9c528))
+
 ## [0.1.3](https://github.com/mljs/direct/compare/v0.1.2...v0.1.3) (2023-03-24)
 
 
