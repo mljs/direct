@@ -72,7 +72,7 @@ export default function direct(
     fCalls = 1,
     smallerDistance = 0,
     edgeSizes = [new Float64Array(n).fill(0.5)],
-    diagonalDistances = [Math.sqrt(n * Math.pow(0.5, 2))],
+    diagonalDistances = [Math.sqrt(n * 0.5 ** 2)],
     functionValues = [bestCurrentValue],
     differentDistances = diagonalDistances,
     smallerValuesByDistance = [bestCurrentValue],

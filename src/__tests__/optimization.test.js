@@ -66,7 +66,7 @@ function griewank(x) {
   let s = 0;
   let p = 1;
   for (let i = 0; i < d; i++) {
-    s += Math.pow(x[i], 2) / Math.sqrt(4000);
+    s += x[i] ** 2 / Math.sqrt(4000);
     p *= Math.cos(x[i] / Math.sqrt(i + 1));
   }
   let result = s - p + 1;
@@ -77,7 +77,7 @@ function rastrigin(x) {
   let d = x.length;
   let s = 0;
   for (let i = 0; i < d; i++) {
-    s += Math.pow(x[i], 2) - 10 * Math.cos(2 * Math.PI * x[i]);
+    s += x[i] ** 2 - 10 * Math.cos(2 * Math.PI * x[i]);
   }
   let result = 10 * d + s;
   return result;
