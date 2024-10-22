@@ -10,14 +10,14 @@ import { antiLowerConvexHull } from './util/antiLowerConvexHull';
  * - `iterations`: Number of iterations performed in the process
  * - `finalState`: Internal state allowing to continue optimization (initialState)
  * @param {Function} objectiveFunction - Function to evaluate. It should accept an array of variables
- * @param {Array} lowerBoundaries - Array containing for each variable the lower boundary
- * @param {Array} upperBoundaries - Array containing for each variable the higher boundary
+ * @param {import('cheminfo-types').NumberArray} lowerBoundaries - Array containing for each variable the lower boundary
+ * @param {import('cheminfo-types').NumberArray} upperBoundaries - Array containing for each variable the higher boundary
  * @param {object} [options={}]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.
  * @param {number} [options.tolerance] - Minimum tollerance of the function.
  * @param {number} [options.tolerance2] - Minimum tollerance of the function.
- * @param {object} [options.initialState={}}] - finalState of previous optimization.
+ * @param {object} [options.initialState={}] - finalState of previous optimization.
  * @returns {object} {finalState, iterations, minFunctionValue}
  */
 
@@ -43,14 +43,16 @@ export function direct(
     throw new RangeError('There is something undefined');
   }
 
-  lowerBoundaries = new Float64Array(lowerBoundaries);
-  upperBoundaries = new Float64Array(upperBoundaries);
-
   if (lowerBoundaries.length !== upperBoundaries.length) {
     throw new Error(
       'Lower bounds and Upper bounds for x are not of the same length',
     );
   }
+
+  lowerBoundaries = Float64Array.from(lowerBoundaries);
+  upperBoundaries = Float64Array.from(upperBoundaries);
+
+
 
   //-------------------------------------------------------------------------
   //                        STEP 1. Initialization
@@ -69,7 +71,7 @@ export function direct(
       );
     }),
     bestCurrentValue = objectiveFunction(middlePoint),
-    fCalls = 1,
+    nbFunctionCalls = 1,
     smallerDistance = 0,
     edgeSizes = [new Float64Array(n).fill(0.5)],
     diagonalDistances = [Math.sqrt(n * 0.5 ** 2)],
@@ -117,7 +119,7 @@ export function direct(
     for (let i = idx; i < differentDistances.length; i++) {
       for (let f = 0; f < functionValues.length; f++) {
         if (
-          (functionValues[f] === smallerValuesByDistance[i]) &
+          (functionValues[f] === smallerValuesByDistance[i]) &&
           (diagonalDistances[f] === differentDistances[i])
         ) {
           S1[counter++] = f;
@@ -193,7 +195,7 @@ export function direct(
         }
         let firstMinValue = objectiveFunction(firstMiddleValue);
         let secondMinValue = objectiveFunction(secondMiddleValue);
-        fCalls += 2;
+        nbFunctionCalls += 2;
         bestFunctionValues.push({
           minValue: Math.min(firstMinValue, secondMinValue),
           index: r,
@@ -231,7 +233,6 @@ export function direct(
       diagonalDistances,
       choiceLimit,
       bestCurrentValue,
-      iteration,
     );
 
     differentDistances = Array.from(new Set(diagonalDistances));
@@ -288,7 +289,7 @@ export function direct(
     totalIterations: (totalIterations += iterations),
     originalCoordinates,
     middlePoint,
-    fCalls,
+    nbFunctionCalls,
     smallerDistance,
     edgeSizes,
     diagonalDistances,
@@ -315,13 +316,17 @@ function getMinIndex(
   choiceLimit,
   bestCurrentValue,
 ) {
-  let item = [];
+  let minIndex = -1;
+  let minValue = Infinity;
+  const targetValue = bestCurrentValue + choiceLimit;
+
   for (let i = 0; i < functionValues.length; i++) {
-    item[i] =
-      Math.abs(functionValues[i] - (bestCurrentValue + choiceLimit)) /
-      diagonalDistances[i];
+    const currentValue = Math.abs(functionValues[i] - targetValue) / diagonalDistances[i];
+    if (currentValue < minValue) {
+      minValue = currentValue;
+      minIndex = i;
+    }
   }
-  const min = xMinValue(item);
-  let result = item.indexOf(min);
-  return result;
+
+  return minIndex;
 }
