@@ -3,6 +3,24 @@ import { describe, expect, it } from 'vitest';
 import { direct } from '../index';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 describe('test Direct method', () => {
+
+  it('Evaluating griewank test function in 3D. 1 iteration', () => {
+    const options = {
+      iterations: 1
+    };
+
+    const lowerBoundaries = [-3, -9];
+    const upperBoundaries = [3, 9];
+
+    const result = direct(
+      griewank,
+      lowerBoundaries,
+      upperBoundaries,
+      options,
+    );
+    expect(result.finalState.nbFunctionCalls).toBe(5);
+  });
+
   it('Evaluating griewank test function in 3D', () => {
     const options = {
       iterations: 50,
