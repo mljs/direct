@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.0.0](https://github.com/mljs/direct/compare/v1.0.0...v2.0.0) (2024-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* rename fCalls to nbFunctionCalls
+* update dependencies and do not export default
+
+### Miscellaneous Chores
+
+* rename fCalls to nbFunctionCalls ([cdb7872](https://github.com/mljs/direct/commit/cdb78723808d1c70ca2522746cd46d0a19adb30b))
+* update dependencies and do not export default ([a9f84dd](https://github.com/mljs/direct/commit/a9f84dd9414872bbb37841b47482b6d8673cf791))
+
 ## [1.0.0](https://github.com/mljs/direct/compare/v0.1.3...v1.0.0) (2024-03-07)
 
 
