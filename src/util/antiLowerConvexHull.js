@@ -2,10 +2,10 @@
  * Preparata, F. P., & Shamos, M. I. (2012). Computational geometry: an introduction. Springer Science & Business Media.
  * @param {Array} x - The array with x coordinates of the points.
  * @param {Array} y - The array with y coordinates of the points.
- * @return {Array} The indices of the points of anticlockwise lower convex hull
+ * @returns {Array} The indices of the points of anticlockwise lower convex hull
  * @private
  */
-export default function antiLowerConvexHull(x, y) {
+export function antiLowerConvexHull(x, y) {
   if (x.length !== y.length) {
     throw new RangeError('X and Y vectors has different dimensions');
   }
@@ -44,7 +44,7 @@ export default function antiLowerConvexHull(x, y) {
  * @param {number} currentPoint - The index of the current point to make the move
  * @param {number} nbPoints - The total number of points in the array
  * @param {Array} vector - The array with the points
- * @return {number} the index of the point after the move
+ * @returns {number} the index of the point after the move
  * @private
  */
 

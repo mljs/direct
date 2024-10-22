@@ -1,6 +1,7 @@
-import direct from '../index';
-// Test functions from https://www.sfu.ca/~ssurjano/optimization.html
+import { describe, expect, it } from 'vitest';
 
+import { direct } from '../index';
+// Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 describe('test Direct method', () => {
   it('Evaluating griewank test function in 3D', () => {
     const options = {

@@ -7,7 +7,7 @@ declare module 'ml-direct' {
     initialState?: any;
   }
 
-  export default function direct(
+  export function direct(
     objectiveFunction: (parameters: number[]) => number,
     lowerBoundaries: number[],
     upperBoundaries: number[],

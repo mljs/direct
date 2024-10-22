@@ -1,6 +1,7 @@
-import direct from '../index';
-// Test functions from https://www.sfu.ca/~ssurjano/optimization.html
+import { describe, expect, it } from 'vitest';
 
+import { direct } from '../index';
+// Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 describe('Initial state option', () => {
   it('The result after two runs of 50 iterations should be equal to one of 100 iterations', () => {
     const lowerBoundaries = [-5, -2];

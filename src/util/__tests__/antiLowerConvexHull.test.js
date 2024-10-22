@@ -1,4 +1,6 @@
-import antiLowerConvexHull from '../antiLowerConvexHull';
+import { describe, expect, it } from 'vitest';
+
+import { antiLowerConvexHull } from '../antiLowerConvexHull';
 
 describe('testing lower convexhull function', () => {
   it('Get anti clockwise lower convex hull', () => {

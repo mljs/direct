@@ -1,6 +1,6 @@
 import { xNorm, xMaxValue, xMinValue } from 'ml-spectra-processing';
 
-import antiLowerConvexHull from './util/antiLowerConvexHull';
+import { antiLowerConvexHull } from './util/antiLowerConvexHull';
 
 /**
  * Performs a global optimization of required parameters
@@ -9,19 +9,19 @@ import antiLowerConvexHull from './util/antiLowerConvexHull';
  * - `optima`: Array of Array of values for all the variables where the function reach its minimum value
  * - `iterations`: Number of iterations performed in the process
  * - `finalState`: Internal state allowing to continue optimization (initialState)
- * @param {function} objectiveFunction Function to evaluate. It should accept an array of variables
- * @param {Array} lowerBoundaries Array containing for each variable the lower boundary
- * @param {Array} upperBoundaries Array containing for each variable the higher boundary
- * @param {Object} [options={}]
+ * @param {Function} objectiveFunction - Function to evaluate. It should accept an array of variables
+ * @param {Array} lowerBoundaries - Array containing for each variable the lower boundary
+ * @param {Array} upperBoundaries - Array containing for each variable the higher boundary
+ * @param {object} [options={}]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.
  * @param {number} [options.tolerance] - Minimum tollerance of the function.
  * @param {number} [options.tolerance2] - Minimum tollerance of the function.
- * @param {Object} [options.initialState={}}] - finalState of previous optimization.
- * @return {Object} {finalState, iterations, minFunctionValue}
- * */
+ * @param {object} [options.initialState={}}] - finalState of previous optimization.
+ * @returns {object} {finalState, iterations, minFunctionValue}
+ */
 
-export default function direct(
+export function direct(
   objectiveFunction,
   lowerBoundaries,
   upperBoundaries,
@@ -83,10 +83,7 @@ export default function direct(
     initialState.originalCoordinates.length > 0
   ) {
     bestCurrentValue = xMinValue(functionValues);
-    choiceLimit =
-      epsilon * Math.abs(bestCurrentValue) > 1e-8
-        ? epsilon * Math.abs(bestCurrentValue)
-        : 1e-8;
+    choiceLimit = Math.max(epsilon * Math.abs(bestCurrentValue), 1e-8);
 
     smallerDistance = getMinIndex(
       functionValues,
@@ -115,10 +112,7 @@ export default function direct(
     //----------------------------------------------------------------------
 
     let S1 = [];
-    let idx = differentDistances.findIndex(
-      // eslint-disable-next-line no-loop-func
-      (e) => e === diagonalDistances[smallerDistance],
-    );
+    let idx = differentDistances.indexOf(diagonalDistances[smallerDistance]);
     let counter = 0;
     for (let i = idx; i < differentDistances.length; i++) {
       for (let f = 0; f < functionValues.length; f++) {
@@ -135,7 +129,7 @@ export default function direct(
     if (differentDistances.length - idx > 1) {
       let a1 = diagonalDistances[smallerDistance];
       let b1 = functionValues[smallerDistance];
-      let a2 = differentDistances[differentDistances.length - 1];
+      let a2 = differentDistances.at(-1);
       let b2 = smallerValuesByDistance[differentDistances.length - 1];
       let slope = (b2 - b1) / (a2 - a1);
       let constant = b1 - slope * a1;
@@ -230,10 +224,7 @@ export default function direct(
 
     bestCurrentValue = xMinValue(functionValues);
 
-    choiceLimit =
-      epsilon * Math.abs(bestCurrentValue) > 1e-8
-        ? epsilon * Math.abs(bestCurrentValue)
-        : 1e-8;
+    choiceLimit = Math.max(epsilon * Math.abs(bestCurrentValue), 1e-8);
 
     smallerDistance = getMinIndex(
       functionValues,
@@ -251,11 +242,12 @@ export default function direct(
       let minIndex;
       let minValue = Number.POSITIVE_INFINITY;
       for (let k = 0; k < diagonalDistances.length; k++) {
-        if (diagonalDistances[k] === differentDistances[i]) {
-          if (functionValues[k] < minValue) {
-            minValue = functionValues[k];
-            minIndex = k;
-          }
+        if (
+          diagonalDistances[k] === differentDistances[i] &&
+          functionValues[k] < minValue
+        ) {
+          minValue = functionValues[k];
+          minIndex = k;
         }
       }
       smallerValuesByDistance.push(functionValues[minIndex]);
@@ -330,6 +322,6 @@ function getMinIndex(
       diagonalDistances[i];
   }
   const min = xMinValue(item);
-  let result = item.findIndex((x) => x === min);
+  let result = item.indexOf(min);
   return result;
 }
