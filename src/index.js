@@ -78,6 +78,11 @@ export function direct(
     smallerValuesByDistance = [bestCurrentValue],
     choiceLimit = undefined,
   } = initialState;
+
+  if (typeof bestCurrentValue !== 'number' || Number.isNaN(bestCurrentValue)) {
+    throw new Error('The initial value is not a number');
+  }
+
   if (
     initialState.originalCoordinates &&
     initialState.originalCoordinates.length > 0
