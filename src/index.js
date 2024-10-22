@@ -15,8 +15,8 @@ import { antiLowerConvexHull } from './util/antiLowerConvexHull';
  * @param {object} [options={}]
  * @param {number} [options.iterations] - Number of iterations.
  * @param {number} [options.epsilon] - Tolerance to choose best current value.
- * @param {number} [options.tolerance] - Minimum tollerance of the function.
- * @param {number} [options.tolerance2] - Minimum tollerance of the function.
+ * @param {number} [options.tolerance] - Minimum tolerance of the function.
+ * @param {number} [options.tolerance2] - Minimum tolerance of the function.
  * @param {object} [options.initialState={}] - finalState of previous optimization.
  * @returns {object} {finalState, iterations, minFunctionValue}
  */
@@ -52,29 +52,27 @@ export function direct(
   lowerBoundaries = Float64Array.from(lowerBoundaries);
   upperBoundaries = Float64Array.from(upperBoundaries);
 
-
-
   //-------------------------------------------------------------------------
   //                        STEP 1. Initialization
   //-------------------------------------------------------------------------
-  let n = lowerBoundaries.length;
-  let diffBorders = upperBoundaries.map((x, i) => x - lowerBoundaries[i]);
+  let nbParameters = lowerBoundaries.length;
+  let diffBoundaries = upperBoundaries.map((x, i) => x - lowerBoundaries[i]);
 
   let {
     numberOfRectangles = 0,
     totalIterations = 0,
-    unitaryCoordinates = [new Float64Array(n).fill(0.5)],
-    middlePoint = new Float64Array(n).map((value, index) => {
+    unitaryCoordinates = [new Float64Array(nbParameters).fill(0.5)],
+    middlePoint = new Float64Array(nbParameters).map((value, index) => {
       return (
         lowerBoundaries[index] +
-        unitaryCoordinates[0][index] * diffBorders[index]
+        unitaryCoordinates[0][index] * diffBoundaries[index]
       );
     }),
     bestCurrentValue = objectiveFunction(middlePoint),
     nbFunctionCalls = 1,
     smallerDistance = 0,
-    edgeSizes = [new Float64Array(n).fill(0.5)],
-    diagonalDistances = [Math.sqrt(n * 0.5 ** 2)],
+    edgeSizes = [new Float64Array(nbParameters).fill(0.5)],
+    diagonalDistances = [Math.sqrt(nbParameters * 0.5 ** 2)],
     functionValues = [bestCurrentValue],
     differentDistances = diagonalDistances,
     smallerValuesByDistance = [bestCurrentValue],
@@ -98,7 +96,7 @@ export function direct(
     for (let j = 0; j < unitaryCoordinates.length; j++) {
       for (let i = 0; i < lowerBoundaries.length; i++) {
         unitaryCoordinates[j][i] =
-          (unitaryCoordinates[j][i] - lowerBoundaries[i]) / diffBorders[i];
+          (unitaryCoordinates[j][i] - lowerBoundaries[i]) / diffBoundaries[i];
       }
     }
   }
@@ -119,8 +117,8 @@ export function direct(
     for (let i = idx; i < differentDistances.length; i++) {
       for (let f = 0; f < functionValues.length; f++) {
         if (
-          (functionValues[f] === smallerValuesByDistance[i]) &&
-          (diagonalDistances[f] === differentDistances[i])
+          functionValues[f] === smallerValuesByDistance[i] &&
+          diagonalDistances[f] === differentDistances[i]
         ) {
           S1[counter++] = f;
         }
@@ -189,9 +187,9 @@ export function direct(
         let secondMiddleValue = new Float64Array(secondMiddleCenter.length);
         for (let i = 0; i < firstMiddleCenter.length; i++) {
           firstMiddleValue[i] =
-            lowerBoundaries[i] + firstMiddleCenter[i] * diffBorders[i];
+            lowerBoundaries[i] + firstMiddleCenter[i] * diffBoundaries[i];
           secondMiddleValue[i] =
-            lowerBoundaries[i] + secondMiddleCenter[i] * diffBorders[i];
+            lowerBoundaries[i] + secondMiddleCenter[i] * diffBoundaries[i];
         }
         let firstMinValue = objectiveFunction(firstMiddleValue);
         let secondMinValue = objectiveFunction(secondMiddleValue);
@@ -260,7 +258,7 @@ export function direct(
         let temp = [];
         for (let i = 0; i < lowerBoundaries.length; i++) {
           temp.push(
-            lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i],
+            lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBoundaries[i],
           );
         }
         currentMin.push(temp);
@@ -279,7 +277,9 @@ export function direct(
   for (let j = 0; j < numberOfRectangles + 1; j++) {
     let pair = [];
     for (let i = 0; i < lowerBoundaries.length; i++) {
-      pair.push(lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBorders[i]);
+      pair.push(
+        lowerBoundaries[i] + unitaryCoordinates[j][i] * diffBoundaries[i],
+      );
     }
     originalCoordinates.push(pair);
   }
@@ -321,7 +321,8 @@ function getMinIndex(
   const targetValue = bestCurrentValue + choiceLimit;
 
   for (let i = 0; i < functionValues.length; i++) {
-    const currentValue = Math.abs(functionValues[i] - targetValue) / diagonalDistances[i];
+    const currentValue =
+      Math.abs(functionValues[i] - targetValue) / diagonalDistances[i];
     if (currentValue < minValue) {
       minValue = currentValue;
       minIndex = i;
