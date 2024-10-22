@@ -13,10 +13,10 @@ import { antiLowerConvexHull } from './util/antiLowerConvexHull';
  * @param {import('cheminfo-types').NumberArray} lowerBoundaries - Array containing for each variable the lower boundary
  * @param {import('cheminfo-types').NumberArray} upperBoundaries - Array containing for each variable the higher boundary
  * @param {object} [options={}]
- * @param {number} [options.iterations] - Number of iterations.
- * @param {number} [options.epsilon] - Tolerance to choose best current value.
- * @param {number} [options.tolerance] - Minimum tolerance of the function.
- * @param {number} [options.tolerance2] - Minimum tolerance of the function.
+ * @param {number} [options.iterations=50] - Number of iterations.
+ * @param {number} [options.epsilon=1e-4] - Tolerance to choose best current value.
+ * @param {number} [options.tolerance=1e-16] - Minimum tolerance of the function.
+ * @param {number} [options.tolerance2=1e-12] - Minimum tolerance of the function.
  * @param {object} [options.initialState={}] - finalState of previous optimization.
  * @returns {object} {finalState, iterations, minFunctionValue}
  */
