@@ -69,21 +69,20 @@ export class Direct {
         let b2 = this.smallerValuesByDistance[this.differentDistances.length - 1];
         let slope = (b2 - b1) / (a2 - a1);
         let constant = b1 - slope * a1;
-        let S2 = new Uint32Array(counter);
-        counter = 0;
-        for (let i = 0; i < S2.length; i++) {
+        let S2 = [];
+        for (let i = 0; i < S1.length; i++) {
           let j = S1[i];
           if (
             this.functionValues[j] <=
             slope * this.diagonalDistances[j] + constant + this.tolerance2
           ) {
-            S2[counter++] = j;
+            S2.push(j);
           }
         }
 
         let xHull = [];
         let yHull = [];
-        for (let i = 0; i < counter; i++) {
+        for (let i = 0; i < S2.length; i++) {
           xHull.push(this.diagonalDistances[S2[i]]);
           yHull.push(this.functionValues[S2[i]]);
         }
@@ -95,7 +94,7 @@ export class Direct {
           S3.push(S2[lowerIndexHull[i]]);
         }
       } else {
-        S3 = S1.slice(0, counter);
+        S3 = S1.slice(0);
       }
       optimumValuesIndex = S3;
       //--------------------------------------------------------------
@@ -200,6 +199,7 @@ export class Direct {
     //--------------------------------------------------------------
     //                  Saving results
     //--------------------------------------------------------------
+
 
     this.minFunctionValue = this.bestCurrentValue;
     this.iterations = iteration;

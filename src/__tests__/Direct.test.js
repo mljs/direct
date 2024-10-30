@@ -8,12 +8,14 @@ describe('test Direct method', () => {
       iterations: 1,
     };
 
-    const lowerBoundaries = [-3, -9];
-    const upperBoundaries = [3, 9];
+    const lowerBoundaries = [-10, -10];
+    const upperBoundaries = [10, 10];
 
     const direct = new Direct(griewank, lowerBoundaries, upperBoundaries, options);
 
     direct.optimize();
+
+
     expect(direct.nbFunctionCalls).toBe(5);
   });
 
