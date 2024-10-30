@@ -80,6 +80,8 @@ const predicted = direct(quadratic, lowerBoundaries, upperBoundaries, options);
 
 ## References
 
+Good explanation: https://link.springer.com/article/10.1007/s10898-020-00952-6
+
 - Jones, D. R., Perttunen, C. D., & Stuckman, B. E. (1993). Lipschitzian optimization without the Lipschitz constant. Journal of optimization Theory and Applications, 79(1), 157-181. https://doi.org/10.1007/BF00941892
 
 - Björkman, M., & Holmström, K. (1999). Global optimization using the DIRECT algorithm in Matlab.

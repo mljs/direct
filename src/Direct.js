@@ -49,19 +49,18 @@ export class Direct {
 
       let S1 = [];
       let idx = this.differentDistances.indexOf(this.diagonalDistances[this.smallerDistance]);
-      let counter = 0;
       for (let i = idx; i < this.differentDistances.length; i++) {
         for (let f = 0; f < this.functionValues.length; f++) {
           if (
             this.functionValues[f] === this.smallerValuesByDistance[i] &&
             this.diagonalDistances[f] === this.differentDistances[i]
           ) {
-            S1[counter++] = f;
+            S1.push(f);
           }
         }
       }
 
-      let optimumValuesIndex, S3;
+      let optimumValuesIndexes, S3;
       if (this.differentDistances.length - idx > 1) {
         let a1 = this.diagonalDistances[this.smallerDistance];
         let b1 = this.functionValues[this.smallerDistance];
@@ -96,23 +95,22 @@ export class Direct {
       } else {
         S3 = S1.slice(0);
       }
-      optimumValuesIndex = S3;
+      optimumValuesIndexes = S3;
       //--------------------------------------------------------------
       // STEPS 3,5: Select any rectangle j in S
       //--------------------------------------------------------------
-      for (let k = 0; k < optimumValuesIndex.length; k++) {
-        let j = optimumValuesIndex[k];
+      for (let k = 0; k < optimumValuesIndexes.length; k++) {
+        let j = optimumValuesIndexes[k];
         let largerSide = xMaxValue(this.edgeSizes[j]);
-        let largeSidesIndex = new Uint32Array(this.edgeSizes[j].length);
-        counter = 0;
+        let largeSidesIndex = []
         for (let i = 0; i < this.edgeSizes[j].length; i++) {
           if (Math.abs(this.edgeSizes[j][i] - largerSide) < this.tolerance) {
-            largeSidesIndex[counter++] = i;
+            largeSidesIndex.push(i);
           }
         }
         let delta = (2 * largerSide) / 3;
         let bestFunctionValues = [];
-        for (let r = 0; r < counter; r++) {
+        for (let r = 0; r < largeSidesIndex.length; r++) {
           let i = largeSidesIndex[r];
           let firstMiddleCenter = this.unitaryCoordinates[j].slice();
           let secondMiddleCenter = this.unitaryCoordinates[j].slice();
@@ -139,7 +137,7 @@ export class Direct {
         }
 
         let b = bestFunctionValues.sort((a, b) => a.minValue - b.minValue);
-        for (let r = 0; r < counter; r++) {
+        for (let r = 0; r < largeSidesIndex.length; r++) {
           let u = largeSidesIndex[b[r].index];
           let ix1 = this.numberOfRectangles + 2 * (b[r].index + 1) - 1;
           let ix2 = this.numberOfRectangles + 2 * (b[r].index + 1);
@@ -150,7 +148,7 @@ export class Direct {
           this.diagonalDistances[ix1] = this.diagonalDistances[j];
           this.diagonalDistances[ix2] = this.diagonalDistances[j];
         }
-        this.numberOfRectangles += 2 * counter;
+        this.numberOfRectangles += 2 * largeSidesIndex.length;
       }
 
       //--------------------------------------------------------------
