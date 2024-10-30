@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { direct } from '../index';
+import { Direct } from '..';
 // Test functions from https://www.sfu.ca/~ssurjano/optimization.html
 describe('test Direct method', () => {
   it('Evaluating griewank test function in 3D. 1 iteration', () => {
@@ -11,8 +11,10 @@ describe('test Direct method', () => {
     const lowerBoundaries = [-3, -9];
     const upperBoundaries = [3, 9];
 
-    const result = direct(griewank, lowerBoundaries, upperBoundaries, options);
-    expect(result.finalState.nbFunctionCalls).toBe(5);
+    const direct = new Direct(griewank, lowerBoundaries, upperBoundaries, options);
+
+    direct.optimize();
+    expect(direct.nbFunctionCalls).toBe(5);
   });
 
   it('Evaluating griewank test function in 3D', () => {
@@ -23,7 +25,8 @@ describe('test Direct method', () => {
     const lowerBoundaries = [-5, -2];
     const upperBoundaries = [4, 3];
 
-    const result = direct(griewank, lowerBoundaries, upperBoundaries, options);
+    const direct = new Direct(griewank, lowerBoundaries, upperBoundaries, options);
+    direct.optimize();
 
     // Theoric result
     const optimum = [
@@ -32,15 +35,15 @@ describe('test Direct method', () => {
     ];
 
     const minValue = 0;
-    const predictedMinValue = result.minFunctionValue;
-    const predictedOptimum0 = Array.from(result.optima[0]);
-    const predictedOptimum1 = Array.from(result.optima[1]);
+    const predictedMinValue = direct.minFunctionValue;
+    const predictedOptimum0 = Array.from(direct.optima[0]);
+    const predictedOptimum1 = Array.from(direct.optima[1]);
     expect(predictedOptimum0[0]).toBeCloseTo(optimum[0][0], 4);
     expect(predictedOptimum0[1]).toBeCloseTo(optimum[0][1], 4);
     expect(predictedOptimum1[0]).toBeCloseTo(optimum[1][0], 4);
     expect(predictedOptimum1[1]).toBeCloseTo(optimum[1][1], 4);
     expect(predictedMinValue).toBeCloseTo(minValue, 7);
-    expect(result).toMatchSnapshot();
+    expect(direct).toMatchSnapshot();
   });
 
   it('Evaluating rastrigin test function in 3D', () => {
@@ -50,14 +53,15 @@ describe('test Direct method', () => {
     const lowerBoundaries = [-5, -1, -2];
     const upperBoundaries = [4, 2, 1];
 
-    const result = direct(rastrigin, lowerBoundaries, upperBoundaries, options);
+    const direct = new Direct(rastrigin, lowerBoundaries, upperBoundaries, options);
+    direct.optimize();
 
     // Theoric result
     const optimum = [0, 0, 0];
     const minValue = 0;
 
-    const predictedMinValue = result.minFunctionValue;
-    const predictedOptimum = Array.from(result.optima[0]);
+    const predictedMinValue = direct.minFunctionValue;
+    const predictedOptimum = Array.from(direct.optima[0]);
     expect(predictedOptimum[0]).toBeCloseTo(optimum[0], 3);
     expect(predictedOptimum[1]).toBeCloseTo(optimum[1], 3);
     expect(predictedOptimum[2]).toBeCloseTo(optimum[2], 3);
